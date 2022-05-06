@@ -10,7 +10,7 @@
 #include "drawer.h"
 
 struct WindowPreferences {
-    sf::Vector2<float> window_size;
+    sf::Vector2f window_size;
 
     std::string window_title;
 
@@ -35,13 +35,21 @@ public:
 
     void Display();
 
+    const sf::Vector2f &GetSize() const {
+        return size_;
+    }
+
+    float GetAspectRatio() const {
+        return size_.x / size_.y;
+    }
+
     // Drawing methods
     void DrawLine(const Vector2 &a, const Vector2 &b, const Color &color, float thickness = 1.f) override;
 
     void DrawTriangle(const Triangle &triangle) override;
 
 private:
-    const sf::Vector2<int> size_;
+    const sf::Vector2f size_;
     const std::string title_;
     const sf::Color background_color_;
     const sf::Uint32 window_style_;

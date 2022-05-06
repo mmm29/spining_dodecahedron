@@ -1,14 +1,22 @@
 #pragma once
 
 #include <cstdint>
+#include <cmath>
 #include <array>
+#include <limits>
 
-template<size_t size>
+template<size_t Rows, size_t Cols>
+class Matrix;
+
+template<size_t Size>
 class Vector {
 public:
-    Vector() = default;
+    Vector() : values_({}) {}
 
-    Vector(std::initializer_list<float> il) : Vector(il, std::make_index_sequence<size>()) {}
+    Vector(std::initializer_list<float> il) : Vector(il, std::make_index_sequence<Size>()) {}
+
+    template<class... Args>
+    explicit Vector(Args... values) : values_({static_cast<float>(values)...}) {}
 
 private:
     template<size_t... Is>
@@ -23,21 +31,107 @@ public:
         return values_[index];
     }
 
+    Matrix<Size, 1> AsMatrix() const {
+        Matrix<Size, 1> result;
+
+        for (size_t i = 0; i < Size; i++)
+            result[i][0] = values_[i];
+
+        return result;
+    }
+
+    Vector<Size> &operator*=(float scalar) {
+        for (float &v : values_)
+            v *= scalar;
+
+        return *this;
+    }
+
+    Vector<Size> &operator/=(float scalar) {
+        for (float &v : values_)
+            v /= scalar;
+
+        return *this;
+    }
+
+    Vector<Size> operator*(float scalar) const {
+        Vector<Size> result = *this;
+        result *= scalar;
+        return result;
+    }
+
+    Vector<Size> operator/(float scalar) const {
+        Vector<Size> result = *this;
+        result /= scalar;
+        return result;
+    }
+
+    Vector<Size> &operator+=(const Vector<Size> &other) {
+        for (size_t i = 0; i < Size; i++)
+            values_[i] += other.values_[i];
+
+        return *this;
+    }
+
+    Vector<Size> &operator-=(const Vector<Size> &other) {
+        for (size_t i = 0; i < Size; i++)
+            values_[i] -= other.values_[i];
+
+        return *this;
+    }
+
+    Vector<Size> operator+(const Vector<Size> &other) const {
+        Vector<Size> result = *this;
+        result += other;
+        return result;
+    }
+
+    Vector<Size> operator-(const Vector<Size> &other) const {
+        Vector<Size> result = *this;
+        result -= other;
+        return result;
+    }
+
+    float GetLength() const {
+        return sqrtf(GetLengthSquared());
+    }
+
+    float GetLengthSquared() const {
+        float length = 0;
+
+        for (const float &v : values_)
+            length += v * v;
+
+        return length;
+    }
+
+    void Normalize() {
+        const float length = GetLength();
+
+        for (float &v : values_)
+            v /= length;
+    }
+
+    bool IsNormalized() const {
+        return std::fabs(GetLengthSquared() - 1) < std::numeric_limits<float>::epsilon();
+    }
+
+    template<size_t DesiredSize>
+    Vector<DesiredSize> AsVector() const {
+        static_assert(DesiredSize >= Size);
+
+        Vector<DesiredSize> result;
+
+        for (size_t i = 0; i < Size; i++)
+            result[i] = values_[i];
+
+        return result;
+    }
+
 private:
-    std::array<float, size> values_;
+    std::array<float, Size> values_;
 };
 
-class Vector2 : public Vector<2> {
-public:
-    Vector2(float x, float y) : Vector<2>({x, y}) {}
-};
-
-class Vector3 : public Vector<3> {
-public:
-    Vector3(float x, float y, float z) : Vector<3>({x, y, z}) {}
-};
-
-class Vector4 : public Vector<4> {
-public:
-    Vector4(float x, float y, float z, float w) : Vector<4>({x, y, z, w}) {}
-};
+using Vector2 = Vector<2>;
+using Vector3 = Vector<3>;
+using Vector4 = Vector<4>;

@@ -1,49 +1,104 @@
-#include <SFML/Graphics.hpp>
-
-#include "screen.h"
-
-int main() {
-    WindowPreferences window_preferences;
-
-    window_preferences.window_size = sf::Vector2f(1280, 720);
-    window_preferences.background_color = sf::Color(255, 255, 255);
-    window_preferences.window_title = "Dodecahedron";
-
-    Screen screen(window_preferences);
-
-    if (!screen.Open()) {
-        printf("Cannot open window.\n");
-        return 1;
-    }
-
-    while (screen.IsOpen()) {
-        screen.PollEvents();
-
-        screen.Clear();
-        screen.DrawLine(Vector2(0, 0), Vector2(50, 50), Color::Red());
-        screen.DrawTriangle(Triangle(Vector2(200, 50), Vector2(100, 150), Vector2(300, 150), Color::Blue(), 1));
-        screen.Display();
-    }
-
-    screen.Close();
-
-//    std::array<float, 2> arr({7, 7});
-
-//    sf::RenderWindow window(sf::VideoMode(1280, 720), "SFML works!");
-//    sf::CircleShape shape(100.f);
-//    shape.setFillColor(sf::Color::Green);
+//#include "engine.h"
 //
+//#include "matrix.h"
+//
+//template<size_t Rows, size_t Cols>
+//void Print(const Matrix<Rows, Cols> &matrix) {
+//    printf("{\n");
+//
+//    if (Rows == 0) {
+//        putchar('\n');
+//    } else {
+//        for (size_t row = 0; row < Rows; row++) {
+//            printf("\t");
+//
+//            for (size_t col = 0; col < Cols; col++) {
+//                printf("%.2f", matrix[row][col]);
+//
+//                if (row + 1 != Rows || col + 1 != Cols)
+//                    putchar(',');
+//
+//                if (col + 1 != Cols)
+//                    putchar(' ');
+//            }
+//
+//            putchar('\n');
+//        }
+//    }
+//
+//    printf("}\n");
+//}
+//
+//int main() {
+//    Engine engine;
+//    engine.Initialize();
+//
+//    if (!engine.Start()) {
+//        printf("Can't start engine.\n");
+//        return 1;
+//    }
+//
+//    return 0;
+//}
+
+//#include <imgui.h>
+//#include <imgui-SFML.h>
+//
+//#include <SFML/Graphics/RenderWindow.hpp>
+//#include <SFML/System/Clock.hpp>
+//#include <SFML/Window/Event.hpp>
+//
+//int main() {
+//    sf::RenderWindow window(sf::VideoMode(640, 480), "");
+//    window.setVerticalSyncEnabled(true);
+//    ImGui::SFML::Init(window);
+//
+//    sf::Color bgColor;
+//    float color[3] = {0.f, 0.f, 0.f};
+//
+//    // здесь мы будем использовать массив char. Чтобы использовать
+//    // std::string нужно сделать действия, описанные во второй части
+//    char windowTitle[255] = "ImGui + SFML = <3";
+//    window.setTitle(windowTitle);
+//
+//    sf::Clock deltaClock;
 //    while (window.isOpen()) {
 //        sf::Event event;
 //        while (window.pollEvent(event)) {
-//            if (event.type == sf::Event::Closed)
+//            ImGui::SFML::ProcessEvent(event);
+//
+//            if (event.type == sf::Event::Closed) {
 //                window.close();
+//            }
 //        }
 //
-//        window.clear();
-//        window.draw(shape);
+//        ImGui::SFML::Update(window, deltaClock.restart());
+//
+//        ImGui::Begin("Sample window"); // создаём окно
+//
+//        // Инструмент выбора цвета
+//        if (ImGui::ColorEdit3("Background color", color)) {
+//            // код вызывается при изменении значения, поэтому всё
+//            // обновляется автоматически
+//            bgColor.r = static_cast<sf::Uint8>(color[0] * 255.f);
+//            bgColor.g = static_cast<sf::Uint8>(color[1] * 255.f);
+//            bgColor.b = static_cast<sf::Uint8>(color[2] * 255.f);
+//        }
+//
+//        ImGui::InputText("Window title", windowTitle, 255);
+//
+//        if (ImGui::Button("Update window title")) {
+//            // этот код выполняется, когда юзер жмёт на кнопку
+//            // здесь можно было бы написать
+//            // if(ImGui::InputText(...))
+//            window.setTitle(windowTitle);
+//        }
+//        ImGui::End(); // end window
+//
+//        window.clear(bgColor); // заполняем окно заданным цветом
+//        ImGui::SFML::Render(window);
 //        window.display();
 //    }
-
-    return 0;
-}
+//
+//    ImGui::SFML::Shutdown();
+//}

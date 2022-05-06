@@ -10,11 +10,19 @@ set(SFML_LIBRARY_DIR "${SFML_ROOT}/lib")
 
 find_package(SFML COMPONENTS window REQUIRED)
 
+# OpenGL
+find_package(OpenGL REQUIRED)
+
+# ImGui
+include_directories(lib/imgui)
+
+file(GLOB IMGUI_SOURCES lib/imgui/*.cpp)
+
 # Source files
 file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
 
 # Executable
-add_executable(spinning_dodecahedron ${SOURCE_FILES})
+add_executable(spinning_dodecahedron ${SOURCE_FILES} ${IMGUI_SOURCES})
 
 # Libraries
-target_link_libraries(spinning_dodecahedron PUBLIC sfml-window sfml-graphics)
+target_link_libraries(spinning_dodecahedron PUBLIC sfml-window sfml-graphics opengl32)

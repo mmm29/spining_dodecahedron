@@ -3,20 +3,160 @@
 #include <cstdint>
 #include <array>
 
-template<size_t rows, size_t cols>
+#include "vector.h"
+
+template<size_t Rows, size_t Cols>
 class Matrix {
 public:
+    Matrix() = default;
+
     Matrix(std::initializer_list<std::initializer_list<float>> il)
-            : Matrix(il, std::make_index_sequence<rows * cols>()) {}
+            : Matrix(il, std::make_index_sequence<Rows * Cols>()) {}
 
 private:
     template<size_t... FlatIs>
     Matrix(std::initializer_list<std::initializer_list<float>> il,
            std::index_sequence<FlatIs...>)
-            : values_{il.begin()[FlatIs / rows].begin()[FlatIs % cols]...} {}
+            : values_{il.begin()[FlatIs / Rows].begin()[FlatIs % Cols]...} {}
 
 public:
-    std::array<std::array<float, cols>, rows> values_;
+    void SetZero() {
+        for (auto &r : values_) {
+            for (float &v : r)
+                v = 0.f;
+        }
+    }
+
+    void SetIdentity() {
+        static_assert(Rows == Cols && "Identity matrix can be created only with square matrix");
+
+        for (size_t row_idx = 0; row_idx < Rows; row_idx++) {
+            for (size_t col_idx = 0; col_idx < Cols; col_idx++)
+                values_[row_idx][col_idx] = row_idx == col_idx ? 1.f : 0.f;
+        }
+    }
+
+public:
+    float &at(size_t row, size_t col) {
+        return values_[row][col];
+    }
+
+    const float &at(size_t row, size_t col) const {
+        return values_[row][col];
+    }
+
+    std::array<float, Cols> &operator[](size_t row) {
+        return values_[row];
+    }
+
+    const std::array<float, Cols> &operator[](size_t row) const {
+        return values_[row];
+    }
+
+    // Operators
+    Matrix<Rows, Cols> &operator*=(float scalar) {
+        for (auto &row : values_) {
+            for (float &val : row)
+                val *= scalar;
+        }
+
+        return *this;
+    }
+
+    Matrix<Rows, Cols> &operator/=(float scalar) {
+        for (auto &row : values_) {
+            for (float &val : row)
+                val /= scalar;
+        }
+
+        return *this;
+    }
+
+    Matrix<Rows, Cols> operator*(float scalar) const {
+        return (*this) *= scalar;
+    }
+
+    Matrix<Rows, Cols> operator/(float scalar) const {
+        return (*this) /= scalar;
+    }
+
+    Matrix<Rows, Cols> operator*(const Matrix<Rows, Cols> &other) const {
+        Matrix<Rows, Cols> result;
+        result.SetZero();
+
+        for (size_t outer_col = 0; outer_col < Cols; outer_col++) {
+            for (size_t row = 0; row < Rows; row++) {
+                for (size_t col = 0; col < Cols; col++)
+                    result.at(row, outer_col) += values_[row][col] * other[col][outer_col];
+            }
+        }
+
+        return result;
+    }
+
+    template<size_t OtherCols>
+    Matrix<Rows, OtherCols> operator*(const Matrix<Rows, OtherCols> &other) const {
+        Matrix<Rows, OtherCols> result;
+        result.SetZero();
+
+        for (size_t outer_col = 0; outer_col < OtherCols; outer_col++) {
+            for (size_t row = 0; row < Rows; row++) {
+                for (size_t col = 0; col < Cols; col++)
+                    result.at(row, outer_col) += values_[row][col] * other[col][outer_col];
+            }
+        }
+
+        return result;
+    }
+
+    Vector<Rows> operator*(const Vector<Cols> &vec) const {
+        Vector<Rows> result;
+
+        for (size_t row = 0; row < Rows; row++) {
+            for (size_t col = 0; col < Cols; col++)
+                result[row] += values_[row][col] * vec[col];
+        }
+
+        return result;
+    }
+
+    Matrix<Rows, Cols> operator-() const {
+        Matrix<Rows, Cols> result = *this;
+
+        for (auto &r : result.values_) {
+            for (float &v : r)
+                v = -v;
+        }
+
+        return result;
+    }
+
+    bool operator==(const Matrix<Rows, Cols> &rhs) const {
+        for (size_t row = 0; row < Rows; row++) {
+            for (size_t col = 0; col < Cols; col++) {
+                if (values_[row][col] != rhs.values_[row][col])
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
+    // Static methods
+    static Matrix<Rows, Cols> Identity() {
+        Matrix<Rows, Cols> result;
+        result.SetIdentity();
+        return result;
+    }
+
+    static Matrix<Rows, Cols> Zero() {
+        Matrix<Rows, Cols> result;
+        result.SetZero();
+        return result;
+    }
+
+private:
+    std::array<std::array<float, Cols>, Rows> values_;
 };
 
-using Matrix4x4 = Matrix<4, 4>;
+using Matrix4 = Matrix<4, 4>;
