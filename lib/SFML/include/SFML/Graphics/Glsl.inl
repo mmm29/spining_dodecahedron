@@ -58,7 +58,7 @@ struct Matrix
     /// \brief Construct from raw data
     ///
     /// \param pointer Points to the beginning of an array that
-    ///                has the size of the matrix. The elements
+    ///                has the Size of the matrix. The elements
     ///                are copied to the instance.
     ///
     ////////////////////////////////////////////////////////////

@@ -147,10 +147,10 @@ public:
     ////////////////////////////////////////////////////////////
     /// \brief Update the whole buffer from an array of vertices
     ///
-    /// The \a vertex array is assumed to have the same size as
+    /// The \a vertex array is assumed to have the same Size as
     /// the \a created buffer.
     ///
-    /// No additional check is performed on the size of the vertex
+    /// No additional check is performed on the Size of the vertex
     /// array, passing invalid arguments will lead to undefined
     /// behavior.
     ///
@@ -170,21 +170,21 @@ public:
     /// \p offset is specified as the number of vertices to skip
     /// from the beginning of the buffer.
     ///
-    /// If \p offset is 0 and \p vertexCount is equal to the size of
+    /// If \p offset is 0 and \p vertexCount is equal to the Size of
     /// the currently created buffer, its whole contents are replaced.
     ///
     /// If \p offset is 0 and \p vertexCount is greater than the
-    /// size of the currently created buffer, a new buffer is created
+    /// Size of the currently created buffer, a new buffer is created
     /// containing the vertex data.
     ///
-    /// If \p offset is 0 and \p vertexCount is less than the size of
+    /// If \p offset is 0 and \p vertexCount is less than the Size of
     /// the currently created buffer, only the corresponding region
     /// is updated.
     ///
     /// If \p offset is not 0 and \p offset + \p vertexCount is greater
-    /// than the size of the currently created buffer, the update fails.
+    /// than the Size of the currently created buffer, the update fails.
     ///
-    /// No additional check is performed on the size of the vertex
+    /// No additional check is performed on the Size of the vertex
     /// array, passing invalid arguments will lead to undefined
     /// behavior.
     ///

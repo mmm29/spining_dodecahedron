@@ -205,14 +205,14 @@ SFML_WINDOW_API bool operator >=(const VideoMode& left, const VideoMode& right);
 ///
 /// Additionally, sf::VideoMode provides a static function
 /// to get the mode currently used by the desktop: getDesktopMode().
-/// This allows to build windows with the same size or pixel
+/// This allows to build windows with the same Size or pixel
 /// depth as the current resolution.
 ///
 /// Usage example:
 /// \code
 /// // Display the list of all the video modes available for fullscreen
 /// std::vector<sf::VideoMode> modes = sf::VideoMode::getFullscreenModes();
-/// for (std::size_t i = 0; i < modes.size(); ++i)
+/// for (std::size_t i = 0; i < modes.Size(); ++i)
 /// {
 ///     sf::VideoMode mode = modes[i];
 ///     std::cout << "Mode #" << i << ": "

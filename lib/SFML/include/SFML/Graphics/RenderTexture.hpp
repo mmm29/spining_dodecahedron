@@ -207,9 +207,9 @@ public:
     void display();
 
     ////////////////////////////////////////////////////////////
-    /// \brief Return the size of the rendering region of the texture
+    /// \brief Return the Size of the rendering region of the texture
     ///
-    /// The returned value is the size that you passed to
+    /// The returned value is the Size that you passed to
     /// the create function.
     ///
     /// \return Size in pixels

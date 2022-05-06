@@ -62,11 +62,11 @@ public:
     /// use it, the behavior is undefined.
     /// \a texture can be NULL to disable texturing.
     /// If \a resetRect is true, the TextureRect property of
-    /// the shape is automatically adjusted to the size of the new
+    /// the shape is automatically adjusted to the Size of the new
     /// texture. If it is false, the texture rect is left unchanged.
     ///
     /// \param texture   New texture
-    /// \param resetRect Should the texture rect be reset to the size of the new texture?
+    /// \param resetRect Should the texture rect be reset to the Size of the new texture?
     ///
     /// \see getTexture, setTextureRect
     ///

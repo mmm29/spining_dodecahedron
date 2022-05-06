@@ -51,9 +51,9 @@ public:
     explicit RectangleShape(const Vector2f& size = Vector2f(0, 0));
 
     ////////////////////////////////////////////////////////////
-    /// \brief Set the size of the rectangle
+    /// \brief Set the Size of the rectangle
     ///
-    /// \param size New size of the rectangle
+    /// \param size New Size of the rectangle
     ///
     /// \see getSize
     ///
@@ -61,7 +61,7 @@ public:
     void setSize(const Vector2f& size);
 
     ////////////////////////////////////////////////////////////
-    /// \brief Get the size of the rectangle
+    /// \brief Get the Size of the rectangle
     ///
     /// \return Size of the rectangle
     ///

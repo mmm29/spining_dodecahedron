@@ -117,13 +117,13 @@ public:
     ////////////////////////////////////////////////////////////
     /// \brief Resize the vertex array
     ///
-    /// If \a vertexCount is greater than the current size, the previous
+    /// If \a vertexCount is greater than the current Size, the previous
     /// vertices are kept and new (default-constructed) vertices are
     /// added.
-    /// If \a vertexCount is less than the current size, existing vertices
+    /// If \a vertexCount is less than the current Size, existing vertices
     /// are removed from the array.
     ///
-    /// \param vertexCount New size of the array (number of vertices)
+    /// \param vertexCount New Size of the array (number of vertices)
     ///
     ////////////////////////////////////////////////////////////
     void resize(std::size_t vertexCount);

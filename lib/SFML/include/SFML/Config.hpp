@@ -201,11 +201,11 @@
 
 
 ////////////////////////////////////////////////////////////
-// Define portable fixed-size types
+// Define portable fixed-Size types
 ////////////////////////////////////////////////////////////
 namespace sf
 {
-    // All "common" platforms use the same size for char, short and int
+    // All "common" platforms use the same Size for char, short and int
     // (basically there are 3 types for 3 sizes, so no other match is possible),
     // we can use them without doing any kind of check
 

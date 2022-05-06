@@ -266,7 +266,7 @@ typedef Vector2<float>        Vector2f;
 ///
 /// sf::Vector2 is a simple class that defines a mathematical
 /// vector with two coordinates (x and y). It can be used to
-/// represent anything that has two dimensions: a size, a point,
+/// represent anything that has two dimensions: a Size, a point,
 /// a velocity, etc.
 ///
 /// The template parameter T is the type of the coordinates. It

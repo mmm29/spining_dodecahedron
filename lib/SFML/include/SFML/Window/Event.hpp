@@ -187,7 +187,7 @@ public:
     enum EventType
     {
         Closed,                 ///< The window requested to be closed (no data)
-        Resized,                ///< The window was resized (data in event.size)
+        Resized,                ///< The window was resized (data in event.Size)
         LostFocus,              ///< The window lost the focus (no data)
         GainedFocus,            ///< The window gained the focus (no data)
         TextEntered,            ///< A character was entered (data in event.text)
@@ -275,7 +275,7 @@ public:
 ///
 ///     // The window was resized
 ///     if (event.type == sf::Event::Resized)
-///         doSomethingWithTheNewSize(event.size.width, event.size.height);
+///         doSomethingWithTheNewSize(event.Size.width, event.Size.height);
 ///
 ///     // etc ...
 /// }

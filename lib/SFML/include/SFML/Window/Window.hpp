@@ -71,7 +71,7 @@ public:
     ////////////////////////////////////////////////////////////
     /// \brief Construct a new window
     ///
-    /// This constructor creates the window with the size and pixel
+    /// This constructor creates the window with the Size and pixel
     /// depth defined in \a mode. An optional style can be passed to
     /// customize the look and behavior of the window (borders,
     /// title bar, resizable, closable, ...). If \a style contains
@@ -263,9 +263,9 @@ public:
     void setPosition(const Vector2i& position);
 
     ////////////////////////////////////////////////////////////
-    /// \brief Get the size of the rendering region of the window
+    /// \brief Get the Size of the rendering region of the window
     ///
-    /// The size doesn't include the titlebar and borders
+    /// The Size doesn't include the titlebar and borders
     /// of the window.
     ///
     /// \return Size in pixels
@@ -276,9 +276,9 @@ public:
     Vector2u getSize() const;
 
     ////////////////////////////////////////////////////////////
-    /// \brief Change the size of the rendering region of the window
+    /// \brief Change the Size of the rendering region of the window
     ///
-    /// \param size New size, in pixels
+    /// \param size New Size, in pixels
     ///
     /// \see getSize
     ///
@@ -512,7 +512,7 @@ protected:
     /// \brief Function called after the window has been resized
     ///
     /// This function is called so that derived classes can
-    /// perform custom actions when the size of the window changes.
+    /// perform custom actions when the Size of the window changes.
     ///
     ////////////////////////////////////////////////////////////
     virtual void onResize();
@@ -546,7 +546,7 @@ private:
     priv::GlContext*  m_context;        ///< Platform-specific implementation of the OpenGL context
     Clock             m_clock;          ///< Clock for measuring the elapsed time between frames
     Time              m_frameTimeLimit; ///< Current framerate limit
-    Vector2u          m_size;           ///< Current size of the window
+    Vector2u          m_size;           ///< Current Size of the window
 };
 
 } // namespace sf

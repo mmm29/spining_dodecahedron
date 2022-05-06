@@ -67,9 +67,9 @@ public:
     Rect(T rectLeft, T rectTop, T rectWidth, T rectHeight);
 
     ////////////////////////////////////////////////////////////
-    /// \brief Construct the rectangle from position and size
+    /// \brief Construct the rectangle from position and Size
     ///
-    /// Be careful, the last parameter is the size,
+    /// Be careful, the last parameter is the Size,
     /// not the bottom-right corner!
     ///
     /// \param position Position of the top-left corner of the rectangle
@@ -206,7 +206,7 @@ typedef Rect<float> FloatRect;
 /// \class sf::Rect
 /// \ingroup graphics
 ///
-/// A rectangle is defined by its top-left corner and its size.
+/// A rectangle is defined by its top-left corner and its Size.
 /// It is a very simple class defined for convenience, so
 /// its member variables (left, top, width and height) are public
 /// and can be accessed directly, just like the vector classes
@@ -233,13 +233,13 @@ typedef Rect<float> FloatRect;
 ///
 /// Usage example:
 /// \code
-/// // Define a rectangle, located at (0, 0) with a size of 20x5
+/// // Define a rectangle, located at (0, 0) with a Size of 20x5
 /// sf::IntRect r1(0, 0, 20, 5);
 ///
-/// // Define another rectangle, located at (4, 2) with a size of 18x10
+/// // Define another rectangle, located at (4, 2) with a Size of 18x10
 /// sf::Vector2i position(4, 2);
-/// sf::Vector2i size(18, 10);
-/// sf::IntRect r2(position, size);
+/// sf::Vector2i Size(18, 10);
+/// sf::IntRect r2(position, Size);
 ///
 /// // Test intersections with the point (3, 1)
 /// bool b1 = r1.contains(3, 1); // true

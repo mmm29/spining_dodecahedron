@@ -218,7 +218,7 @@ namespace Glsl
 ///
 /// All matrix types support a constructor with a float*
 /// parameter that points to a float array of the appropriate
-/// size (that is, 9 in a 3x3 matrix, 16 in a 4x4 matrix).
+/// Size (that is, 9 in a 3x3 matrix, 16 in a 4x4 matrix).
 /// Furthermore, they can be converted from sf::Transform
 /// objects.
 ///

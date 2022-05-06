@@ -81,7 +81,7 @@ public:
     virtual Int64 tell() = 0;
 
     ////////////////////////////////////////////////////////////
-    /// \brief Return the size of the stream
+    /// \brief Return the Size of the stream
     ///
     /// \return The total number of bytes available in the stream, or -1 on error
     ///
@@ -121,7 +121,7 @@ public:
 ///
 ///     bool open(std::string filename);
 ///
-///     Int64 read(void* data, Int64 size);
+///     Int64 read(void* data, Int64 Size);
 ///
 ///     Int64 seek(Int64 position);
 ///

@@ -355,7 +355,7 @@ public:
     void clear();
 
     ////////////////////////////////////////////////////////////
-    /// \brief Get the size of the string
+    /// \brief Get the Size of the string
     ///
     /// \return Number of characters in the string
     ///

@@ -87,11 +87,11 @@ public:
     /// If the source texture is destroyed and the sprite tries to
     /// use it, the behavior is undefined.
     /// If \a resetRect is true, the TextureRect property of
-    /// the sprite is automatically adjusted to the size of the new
+    /// the sprite is automatically adjusted to the Size of the new
     /// texture. If it is false, the texture rect is left unchanged.
     ///
     /// \param texture   New texture
-    /// \param resetRect Should the texture rect be reset to the size of the new texture?
+    /// \param resetRect Should the texture rect be reset to the Size of the new texture?
     ///
     /// \see getTexture, setTextureRect
     ///

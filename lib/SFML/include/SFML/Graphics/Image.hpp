@@ -156,7 +156,7 @@ public:
     bool saveToFile(const std::string& filename) const;
 
     ////////////////////////////////////////////////////////////
-    /// \brief Return the size (width and height) of the image
+    /// \brief Return the Size (width and height) of the image
     ///
     /// \return Size of the image, in pixels
     ///
@@ -235,7 +235,7 @@ public:
     /// \brief Get a read-only pointer to the array of pixels
     ///
     /// The returned value points to an array of RGBA pixels made of
-    /// 8 bits integers components. The size of the array is
+    /// 8 bits integers components. The Size of the array is
     /// width * height * 4 (getSize().x * getSize().y * 4).
     /// Warning: the returned pointer may become invalid if you
     /// modify the image, so you should never store it for too long.
@@ -263,7 +263,7 @@ private:
     ////////////////////////////////////////////////////////////
     // Member data
     ////////////////////////////////////////////////////////////
-    Vector2u           m_size;   ///< Image size
+    Vector2u           m_size;   ///< Image Size
     std::vector<Uint8> m_pixels; ///< Pixels of the image
 };
 

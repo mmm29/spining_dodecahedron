@@ -104,7 +104,7 @@ public:
     ////////////////////////////////////////////////////////////
     /// \brief Get the default view of the render target
     ///
-    /// The default view has the initial size of the render target,
+    /// The default view has the initial Size of the render target,
     /// and never changes after the target has been created.
     ///
     /// \return The default view of the render target
@@ -269,7 +269,7 @@ public:
     void draw(const VertexBuffer& vertexBuffer, std::size_t firstVertex, std::size_t vertexCount, const RenderStates& states = RenderStates::Default);
 
     ////////////////////////////////////////////////////////////
-    /// \brief Return the size of the rendering region of the target
+    /// \brief Return the Size of the rendering region of the target
     ///
     /// \return Size in pixels
     ///

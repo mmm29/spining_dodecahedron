@@ -267,7 +267,7 @@ typedef Vector3<float> Vector3f;
 ///
 /// sf::Vector3 is a simple class that defines a mathematical
 /// vector with three coordinates (x, y and z). It can be used to
-/// represent anything that has three dimensions: a size, a point,
+/// represent anything that has three dimensions: a Size, a point,
 /// a velocity, etc.
 ///
 /// The template parameter T is the type of the coordinates. It

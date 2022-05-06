@@ -164,13 +164,13 @@ public:
     ///
     /// If the font is a bitmap font, not all character sizes
     /// might be available. If the glyph is not available at the
-    /// requested size, an empty glyph is returned.
+    /// requested Size, an empty glyph is returned.
     ///
     /// Be aware that using a negative value for the outline
     /// thickness will cause distorted rendering.
     ///
     /// \param codePoint        Unicode code point of the character to get
-    /// \param characterSize    Reference character size
+    /// \param characterSize    Reference character Size
     /// \param bold             Retrieve the bold version or the regular one?
     /// \param outlineThickness Thickness of outline (when != 0 the glyph will not be filled)
     ///
@@ -190,7 +190,7 @@ public:
     ///
     /// \param first         Unicode code point of the first character
     /// \param second        Unicode code point of the second character
-    /// \param characterSize Reference character size
+    /// \param characterSize Reference character Size
     ///
     /// \return Kerning value for \a first and \a second, in pixels
     ///
@@ -203,7 +203,7 @@ public:
     /// Line spacing is the vertical offset to apply between two
     /// consecutive lines of text.
     ///
-    /// \param characterSize Reference character size
+    /// \param characterSize Reference character Size
     ///
     /// \return Line spacing, in pixels
     ///
@@ -216,7 +216,7 @@ public:
     /// Underline position is the vertical offset to apply between the
     /// baseline and the underline.
     ///
-    /// \param characterSize Reference character size
+    /// \param characterSize Reference character Size
     ///
     /// \return Underline position, in pixels
     ///
@@ -228,9 +228,9 @@ public:
     ////////////////////////////////////////////////////////////
     /// \brief Get the thickness of the underline
     ///
-    /// Underline thickness is the vertical size of the underline.
+    /// Underline thickness is the vertical Size of the underline.
     ///
-    /// \param characterSize Reference character size
+    /// \param characterSize Reference character Size
     ///
     /// \return Underline thickness, in pixels
     ///
@@ -240,15 +240,15 @@ public:
     float getUnderlineThickness(unsigned int characterSize) const;
 
     ////////////////////////////////////////////////////////////
-    /// \brief Retrieve the texture containing the loaded glyphs of a certain size
+    /// \brief Retrieve the texture containing the loaded glyphs of a certain Size
     ///
     /// The contents of the returned texture changes as more glyphs
     /// are requested, thus it is not very relevant. It is mainly
     /// used internally by sf::Text.
     ///
-    /// \param characterSize Reference character size
+    /// \param characterSize Reference character Size
     ///
-    /// \return Texture containing the glyphs of the requested size
+    /// \return Texture containing the glyphs of the requested Size
     ///
     ////////////////////////////////////////////////////////////
     const Texture& getTexture(unsigned int characterSize) const;
@@ -294,7 +294,7 @@ private:
         GlyphTable       glyphs;  ///< Table mapping code points to their corresponding glyph
         Texture          texture; ///< Texture containing the pixels of the glyphs
         unsigned int     nextRow; ///< Y position of the next new row in the texture
-        std::vector<Row> rows;    ///< List containing the position of all the existing rows
+        std::vector<Row> rows;    ///< List containing the position of all the existing Rows
     };
 
     ////////////////////////////////////////////////////////////
@@ -307,7 +307,7 @@ private:
     /// \brief Load a new glyph and store it in the cache
     ///
     /// \param codePoint        Unicode code point of the character to load
-    /// \param characterSize    Reference character size
+    /// \param characterSize    Reference character Size
     /// \param bold             Retrieve the bold version or the regular one?
     /// \param outlineThickness Thickness of outline (when != 0 the glyph will not be filled)
     ///
@@ -329,9 +329,9 @@ private:
     IntRect findGlyphRect(Page& page, unsigned int width, unsigned int height) const;
 
     ////////////////////////////////////////////////////////////
-    /// \brief Make sure that the given size is the current one
+    /// \brief Make sure that the given Size is the current one
     ///
-    /// \param characterSize Reference character size
+    /// \param characterSize Reference character Size
     ///
     /// \return True on success, false if any error happened
     ///
@@ -341,7 +341,7 @@ private:
     ////////////////////////////////////////////////////////////
     // Types
     ////////////////////////////////////////////////////////////
-    typedef std::map<unsigned int, Page> PageTable; ///< Table mapping a character size to its page (texture)
+    typedef std::map<unsigned int, Page> PageTable; ///< Table mapping a character Size to its page (texture)
 
     ////////////////////////////////////////////////////////////
     // Member data
@@ -352,7 +352,7 @@ private:
     void*                      m_stroker;     ///< Pointer to the stroker (it is typeless to avoid exposing implementation details)
     int*                       m_refCount;    ///< Reference counter used by implicit sharing
     Info                       m_info;        ///< Information about the font
-    mutable PageTable          m_pages;       ///< Table containing the glyphs pages by character size
+    mutable PageTable          m_pages;       ///< Table containing the glyphs pages by character Size
     mutable std::vector<Uint8> m_pixelBuffer; ///< Pixel buffer holding a glyph's pixels before being written to the texture
     #ifdef SFML_SYSTEM_ANDROID
     void*                      m_stream; ///< Asset file streamer (if loaded from file)
@@ -382,7 +382,7 @@ private:
 /// Fonts alone are not very useful: they hold the font data
 /// but cannot make anything useful of it. To do so you need to
 /// use the sf::Text class, which is able to properly output text
-/// with several options such as character size, style, color,
+/// with several options such as character Size, style, color,
 /// position, rotation, etc.
 /// This separation allows more flexibility and better performances:
 /// indeed a sf::Font is a heavy resource, and any operation on it
@@ -431,8 +431,8 @@ private:
 /// Note that if the font is a bitmap font, it is not scalable,
 /// thus not all requested sizes will be available to use. This
 /// needs to be taken into consideration when using sf::Text.
-/// If you need to display text of a certain size, make sure the
-/// corresponding bitmap font that supports that size is used.
+/// If you need to display text of a certain Size, make sure the
+/// corresponding bitmap font that supports that Size is used.
 ///
 /// \see sf::Text
 ///

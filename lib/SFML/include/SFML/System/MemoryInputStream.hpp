@@ -92,7 +92,7 @@ public:
     virtual Int64 tell();
 
     ////////////////////////////////////////////////////////////
-    /// \brief Return the size of the stream
+    /// \brief Return the Size of the stream
     ///
     /// \return The total number of bytes available in the stream, or -1 on error
     ///
@@ -105,7 +105,7 @@ private:
     // Member data
     ////////////////////////////////////////////////////////////
     const char* m_data;   ///< Pointer to the data in memory
-    Int64       m_size;   ///< Total size of the data
+    Int64       m_size;   ///< Total Size of the data
     Int64       m_offset; ///< Current reading position
 };
 
@@ -128,7 +128,7 @@ private:
 ///
 /// In addition to the virtual functions inherited from
 /// InputStream, MemoryInputStream adds a function to
-/// specify the pointer and size of the data in memory.
+/// specify the pointer and Size of the data in memory.
 ///
 /// SFML resource classes can usually be loaded directly from
 /// memory, so this class shouldn't be useful to you unless

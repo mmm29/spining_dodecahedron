@@ -57,7 +57,7 @@ public:
     ////////////////////////////////////////////////////////////
     /// \brief Construct a new window
     ///
-    /// This constructor creates the window with the size and pixel
+    /// This constructor creates the window with the Size and pixel
     /// depth defined in \a mode. An optional style can be passed to
     /// customize the look and behavior of the window (borders,
     /// title bar, resizable, closable, ...).
@@ -102,9 +102,9 @@ public:
     virtual ~RenderWindow();
 
     ////////////////////////////////////////////////////////////
-    /// \brief Get the size of the rendering region of the window
+    /// \brief Get the Size of the rendering region of the window
     ///
-    /// The size doesn't include the titlebar and borders
+    /// The Size doesn't include the titlebar and borders
     /// of the window.
     ///
     /// \return Size in pixels
@@ -173,7 +173,7 @@ protected:
     /// \brief Function called after the window has been resized
     ///
     /// This function is called so that derived classes can
-    /// perform custom actions when the size of the window changes.
+    /// perform custom actions when the Size of the window changes.
     ///
     ////////////////////////////////////////////////////////////
     virtual void onResize();

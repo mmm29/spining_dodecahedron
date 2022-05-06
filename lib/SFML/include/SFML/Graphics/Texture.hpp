@@ -56,7 +56,7 @@ public:
     enum CoordinateType
     {
         Normalized, ///< Texture coordinates in range [0 .. 1]
-        Pixels      ///< Texture coordinates in range [0 .. size]
+        Pixels      ///< Texture coordinates in range [0 .. Size]
     };
 
 public:
@@ -110,9 +110,9 @@ public:
     /// of the whole image. If you want the entire image then leave
     /// the default value (which is an empty IntRect).
     /// If the \a area rectangle crosses the bounds of the image, it
-    /// is adjusted to fit the image size.
+    /// is adjusted to fit the image Size.
     ///
-    /// The maximum size for a texture depends on the graphics
+    /// The maximum Size for a texture depends on the graphics
     /// driver and can be retrieved with the getMaximumSize function.
     ///
     /// If this function fails, the texture is left unchanged.
@@ -133,7 +133,7 @@ public:
     /// This function is a shortcut for the following code:
     /// \code
     /// sf::Image image;
-    /// image.loadFromMemory(data, size);
+    /// image.loadFromMemory(data, Size);
     /// texture.loadFromImage(image, area);
     /// \endcode
     ///
@@ -141,9 +141,9 @@ public:
     /// of the whole image. If you want the entire image then leave
     /// the default value (which is an empty IntRect).
     /// If the \a area rectangle crosses the bounds of the image, it
-    /// is adjusted to fit the image size.
+    /// is adjusted to fit the image Size.
     ///
-    /// The maximum size for a texture depends on the graphics
+    /// The maximum Size for a texture depends on the graphics
     /// driver and can be retrieved with the getMaximumSize function.
     ///
     /// If this function fails, the texture is left unchanged.
@@ -173,9 +173,9 @@ public:
     /// of the whole image. If you want the entire image then leave
     /// the default value (which is an empty IntRect).
     /// If the \a area rectangle crosses the bounds of the image, it
-    /// is adjusted to fit the image size.
+    /// is adjusted to fit the image Size.
     ///
-    /// The maximum size for a texture depends on the graphics
+    /// The maximum Size for a texture depends on the graphics
     /// driver and can be retrieved with the getMaximumSize function.
     ///
     /// If this function fails, the texture is left unchanged.
@@ -197,9 +197,9 @@ public:
     /// of the whole image. If you want the entire image then leave
     /// the default value (which is an empty IntRect).
     /// If the \a area rectangle crosses the bounds of the image, it
-    /// is adjusted to fit the image size.
+    /// is adjusted to fit the image Size.
     ///
-    /// The maximum size for a texture depends on the graphics
+    /// The maximum Size for a texture depends on the graphics
     /// driver and can be retrieved with the getMaximumSize function.
     ///
     /// If this function fails, the texture is left unchanged.
@@ -215,7 +215,7 @@ public:
     bool loadFromImage(const Image& image, const IntRect& area = IntRect());
 
     ////////////////////////////////////////////////////////////
-    /// \brief Return the size of the texture
+    /// \brief Return the Size of the texture
     ///
     /// \return Size in pixels
     ///
@@ -240,10 +240,10 @@ public:
     ////////////////////////////////////////////////////////////
     /// \brief Update the whole texture from an array of pixels
     ///
-    /// The \a pixel array is assumed to have the same size as
+    /// The \a pixel array is assumed to have the same Size as
     /// the \a area rectangle, and to contain 32-bits RGBA pixels.
     ///
-    /// No additional check is performed on the size of the pixel
+    /// No additional check is performed on the Size of the pixel
     /// array, passing invalid arguments will lead to an undefined
     /// behavior.
     ///
@@ -258,10 +258,10 @@ public:
     ////////////////////////////////////////////////////////////
     /// \brief Update a part of the texture from an array of pixels
     ///
-    /// The size of the \a pixel array must match the \a width and
+    /// The Size of the \a pixel array must match the \a width and
     /// \a height arguments, and it must contain 32-bits RGBA pixels.
     ///
-    /// No additional check is performed on the size of the pixel
+    /// No additional check is performed on the Size of the pixel
     /// array or the bounds of the area to update, passing invalid
     /// arguments will lead to an undefined behavior.
     ///
@@ -285,7 +285,7 @@ public:
     /// The other overload, which has (x, y) additional arguments,
     /// is more convenient for updating a sub-area of this texture.
     ///
-    /// No additional check is performed on the size of the passed
+    /// No additional check is performed on the Size of the passed
     /// texture, passing a texture bigger than this texture
     /// will lead to an undefined behavior.
     ///
@@ -300,8 +300,8 @@ public:
     ////////////////////////////////////////////////////////////
     /// \brief Update a part of this texture from another texture
     ///
-    /// No additional check is performed on the size of the texture,
-    /// passing an invalid combination of texture size and offset
+    /// No additional check is performed on the Size of the texture,
+    /// passing an invalid combination of texture Size and offset
     /// will lead to an undefined behavior.
     ///
     /// This function does nothing if either texture was not
@@ -322,7 +322,7 @@ public:
     /// The other overload, which has (x, y) additional arguments,
     /// is more convenient for updating a sub-area of the texture.
     ///
-    /// No additional check is performed on the size of the image,
+    /// No additional check is performed on the Size of the image,
     /// passing an image bigger than the texture will lead to an
     /// undefined behavior.
     ///
@@ -337,8 +337,8 @@ public:
     ////////////////////////////////////////////////////////////
     /// \brief Update a part of the texture from an image
     ///
-    /// No additional check is performed on the size of the image,
-    /// passing an invalid combination of image size and offset
+    /// No additional check is performed on the Size of the image,
+    /// passing an invalid combination of image Size and offset
     /// will lead to an undefined behavior.
     ///
     /// This function does nothing if the texture was not
@@ -359,7 +359,7 @@ public:
     /// The other overload, which has (x, y) additional arguments,
     /// is more convenient for updating a sub-area of the texture.
     ///
-    /// No additional check is performed on the size of the window,
+    /// No additional check is performed on the Size of the window,
     /// passing a window bigger than the texture will lead to an
     /// undefined behavior.
     ///
@@ -374,8 +374,8 @@ public:
     ////////////////////////////////////////////////////////////
     /// \brief Update a part of the texture from the contents of a window
     ///
-    /// No additional check is performed on the size of the window,
-    /// passing an invalid combination of window size and offset
+    /// No additional check is performed on the Size of the window,
+    /// passing an invalid combination of window Size and offset
     /// will lead to an undefined behavior.
     ///
     /// This function does nothing if either the texture or the window
@@ -489,7 +489,7 @@ public:
     /// Mipmaps are pre-computed chains of optimized textures. Each
     /// level of texture in a mipmap is generated by halving each of
     /// the previous level's dimensions. This is done until the final
-    /// level has the size of 1x1. The textures generated in this process may
+    /// level has the Size of 1x1. The textures generated in this process may
     /// make use of more advanced filters which might improve the visual quality
     /// of textures when they are applied to objects much smaller than they are.
     /// This is known as minification. Because fewer texels (texture elements)
@@ -560,7 +560,7 @@ public:
     /// coordinates will be interpreted. If Normalized (the default), they
     /// must be in range [0 .. 1], which is the default way of handling
     /// texture coordinates with OpenGL. If Pixels, they must be given
-    /// in pixels (range [0 .. size]). This mode is used internally by
+    /// in pixels (range [0 .. Size]). This mode is used internally by
     /// the graphics classes of SFML, it makes the definition of texture
     /// coordinates more intuitive for the high-level API, users don't need
     /// to compute normalized values.
@@ -572,13 +572,13 @@ public:
     static void bind(const Texture* texture, CoordinateType coordinateType = Normalized);
 
     ////////////////////////////////////////////////////////////
-    /// \brief Get the maximum texture size allowed
+    /// \brief Get the maximum texture Size allowed
     ///
-    /// This maximum size is defined by the graphics driver.
+    /// This maximum Size is defined by the graphics driver.
     /// You can expect a value of 512 pixels for low-end graphics
     /// card, and up to 8192 pixels or more for newer hardware.
     ///
-    /// \return Maximum size allowed for textures, in pixels
+    /// \return Maximum Size allowed for textures, in pixels
     ///
     ////////////////////////////////////////////////////////////
     static unsigned int getMaximumSize();
@@ -590,16 +590,16 @@ private:
     friend class RenderTarget;
 
     ////////////////////////////////////////////////////////////
-    /// \brief Get a valid image size according to hardware support
+    /// \brief Get a valid image Size according to hardware support
     ///
     /// This function checks whether the graphics driver supports
-    /// non power of two sizes or not, and adjusts the size
+    /// non power of two sizes or not, and adjusts the Size
     /// accordingly.
-    /// The returned size is greater than or equal to the original size.
+    /// The returned Size is greater than or equal to the original Size.
     ///
-    /// \param size size to convert
+    /// \param size Size to convert
     ///
-    /// \return Valid nearest size (greater than or equal to specified size)
+    /// \return Valid nearest Size (greater than or equal to specified Size)
     ///
     ////////////////////////////////////////////////////////////
     static unsigned int getValidSize(unsigned int size);
@@ -616,8 +616,8 @@ private:
     ////////////////////////////////////////////////////////////
     // Member data
     ////////////////////////////////////////////////////////////
-    Vector2u     m_size;          ///< Public texture size
-    Vector2u     m_actualSize;    ///< Actual texture size (can be greater than public size because of padding)
+    Vector2u     m_size;          ///< Public texture Size
+    Vector2u     m_actualSize;    ///< Actual texture Size (can be greater than public Size because of padding)
     unsigned int m_texture;       ///< Internal texture identifier
     bool         m_isSmooth;      ///< Status of the smooth filter
     bool         m_sRgb;          ///< Should the texture source be converted from sRGB?

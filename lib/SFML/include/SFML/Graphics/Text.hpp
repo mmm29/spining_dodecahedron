@@ -71,18 +71,18 @@ public:
     Text();
 
     ////////////////////////////////////////////////////////////
-    /// \brief Construct the text from a string, font and size
+    /// \brief Construct the text from a string, font and Size
     ///
     /// Note that if the used font is a bitmap font, it is not
     /// scalable, thus not all requested sizes will be available
     /// to use. This needs to be taken into consideration when
-    /// setting the character size. If you need to display text
-    /// of a certain size, make sure the corresponding bitmap
-    /// font that supports that size is used.
+    /// setting the character Size. If you need to display text
+    /// of a certain Size, make sure the corresponding bitmap
+    /// font that supports that Size is used.
     ///
     /// \param string         Text assigned to the string
     /// \param font           Font used to draw the string
-    /// \param characterSize  Base size of characters, in pixels
+    /// \param characterSize  Base Size of characters, in pixels
     ///
     ////////////////////////////////////////////////////////////
     Text(const String& string, const Font& font, unsigned int characterSize = 30);
@@ -126,18 +126,18 @@ public:
     void setFont(const Font& font);
 
     ////////////////////////////////////////////////////////////
-    /// \brief Set the character size
+    /// \brief Set the character Size
     ///
-    /// The default size is 30.
+    /// The default Size is 30.
     ///
     /// Note that if the used font is a bitmap font, it is not
     /// scalable, thus not all requested sizes will be available
     /// to use. This needs to be taken into consideration when
-    /// setting the character size. If you need to display text
-    /// of a certain size, make sure the corresponding bitmap
-    /// font that supports that size is used.
+    /// setting the character Size. If you need to display text
+    /// of a certain Size, make sure the corresponding bitmap
+    /// font that supports that Size is used.
     ///
-    /// \param size New character size, in pixels
+    /// \param size New character Size, in pixels
     ///
     /// \see getCharacterSize
     ///
@@ -165,7 +165,7 @@ public:
     /// This factor doesn't directly apply to the existing
     /// spacing between each character, it rather adds a fixed
     /// space between them which is calculated from the font
-    /// metrics and the character size.
+    /// metrics and the character Size.
     /// Note that factors below 1 (including negative numbers) bring
     /// characters closer to each other.
     /// By default the letter spacing factor is 1.
@@ -284,7 +284,7 @@ public:
     const Font* getFont() const;
 
     ////////////////////////////////////////////////////////////
-    /// \brief Get the character size
+    /// \brief Get the character Size
     ///
     /// \return Size of the characters, in pixels
     ///
@@ -294,7 +294,7 @@ public:
     unsigned int getCharacterSize() const;
 
     ////////////////////////////////////////////////////////////
-    /// \brief Get the size of the letter spacing factor
+    /// \brief Get the Size of the letter spacing factor
     ///
     /// \return Size of the letter spacing factor
     ///
@@ -304,7 +304,7 @@ public:
     float getLetterSpacing() const;
 
     ////////////////////////////////////////////////////////////
-    /// \brief Get the size of the line spacing factor
+    /// \brief Get the Size of the line spacing factor
     ///
     /// \return Size of the line spacing factor
     ///
@@ -437,7 +437,7 @@ private:
     ////////////////////////////////////////////////////////////
     String              m_string;              ///< String to display
     const Font*         m_font;                ///< Font used to display the string
-    unsigned int        m_characterSize;       ///< Base size of characters, in pixels
+    unsigned int        m_characterSize;       ///< Base Size of characters, in pixels
     float               m_letterSpacingFactor; ///< Spacing factor between letters
     float               m_lineSpacingFactor;   ///< Spacing factor between lines
     Uint32              m_style;               ///< Text style (see Style enum)
@@ -466,12 +466,12 @@ private:
 ///
 /// It inherits all the functions from sf::Transformable:
 /// position, rotation, scale, origin. It also adds text-specific
-/// properties such as the font to use, the character size,
+/// properties such as the font to use, the character Size,
 /// the font style (bold, italic, underlined and strike through), the
 /// text color, the outline thickness, the outline color, the character
 /// spacing, the line spacing and the text to display of course.
 /// It also provides convenience functions to calculate the
-/// graphical size of the text, or to get the global position
+/// graphical Size of the text, or to get the global position
 /// of a given character.
 ///
 /// sf::Text works in combination with the sf::Font class, which

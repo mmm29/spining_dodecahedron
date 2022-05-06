@@ -110,7 +110,7 @@ public:
     virtual Int64 tell();
 
     ////////////////////////////////////////////////////////////
-    /// \brief Return the size of the stream
+    /// \brief Return the Size of the stream
     ///
     /// \return The total number of bytes available in the stream, or -1 on error
     ///

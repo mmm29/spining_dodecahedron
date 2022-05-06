@@ -422,7 +422,7 @@ private:
 /// to texels (pixels in the texture). More specifically, this means:
 /// * The object's position, origin and scale have no fractional part
 /// * The object's and the view's rotation are a multiple of 90 degrees
-/// * The view's center and size have no fractional part
+/// * The view's center and Size have no fractional part
 ///
 /// \see sf::Transform
 ///
