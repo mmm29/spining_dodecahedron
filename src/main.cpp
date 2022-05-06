@@ -1,45 +1,45 @@
-//#include "engine.h"
-//
-//#include "matrix.h"
-//
-//template<size_t Rows, size_t Cols>
-//void Print(const Matrix<Rows, Cols> &matrix) {
-//    printf("{\n");
-//
-//    if (Rows == 0) {
-//        putchar('\n');
-//    } else {
-//        for (size_t row = 0; row < Rows; row++) {
-//            printf("\t");
-//
-//            for (size_t col = 0; col < Cols; col++) {
-//                printf("%.2f", matrix[row][col]);
-//
-//                if (row + 1 != Rows || col + 1 != Cols)
-//                    putchar(',');
-//
-//                if (col + 1 != Cols)
-//                    putchar(' ');
-//            }
-//
-//            putchar('\n');
-//        }
-//    }
-//
-//    printf("}\n");
-//}
-//
-//int main() {
-//    Engine engine;
-//    engine.Initialize();
-//
-//    if (!engine.Start()) {
-//        printf("Can't start engine.\n");
-//        return 1;
-//    }
-//
-//    return 0;
-//}
+#include "engine.h"
+
+#include "matrix.h"
+
+template<size_t Rows, size_t Cols>
+void Print(const Matrix<Rows, Cols> &matrix) {
+    printf("{\n");
+
+    if (Rows == 0) {
+        putchar('\n');
+    } else {
+        for (size_t row = 0; row < Rows; row++) {
+            printf("\t");
+
+            for (size_t col = 0; col < Cols; col++) {
+                printf("%.2f", matrix[row][col]);
+
+                if (row + 1 != Rows || col + 1 != Cols)
+                    putchar(',');
+
+                if (col + 1 != Cols)
+                    putchar(' ');
+            }
+
+            putchar('\n');
+        }
+    }
+
+    printf("}\n");
+}
+
+int main() {
+    Engine engine;
+    engine.Initialize();
+
+    if (!engine.Start()) {
+        printf("Can't start engine.\n");
+        return 1;
+    }
+
+    return 0;
+}
 
 //#include <imgui.h>
 //#include <imgui-SFML.h>

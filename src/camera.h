@@ -31,7 +31,7 @@ private:
 
     Vector3 rotation_;
 
-    float field_of_view_ = M_PI / 16;
+    float field_of_view_ = M_PI / 2;
 
     float near_z = 0.1f;
 

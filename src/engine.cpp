@@ -41,10 +41,8 @@ bool Engine::Start() {
             return Vector2(res[0], res[1]);
         };
 
-//        camera_->SetPosition(camera_->GetPosition() + Vector3(0, 0.0005, 0));
-        camera_->SetFieldOfView(camera_->GetFieldOfView() + (M_PI / 180 / 10));
+        camera_->SetPosition(camera_->GetPosition() + Vector3(0, 0.0005, 0));
         view_->UpdateMatrices();
-
 
         {
             static const Vector2 net_corners[2] = {
