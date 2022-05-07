@@ -5,10 +5,6 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "vector.h"
-
-#include "drawer.h"
-
 struct WindowPreferences {
     sf::Vector2f window_size;
 
@@ -19,9 +15,9 @@ struct WindowPreferences {
     sf::Uint32 style = sf::Style::Default;
 };
 
-class Screen : public Drawer {
+class SFMLScreen {
 public:
-    explicit Screen(const WindowPreferences &window_preferences);
+    explicit SFMLScreen(const WindowPreferences &window_preferences);
 
     bool Open();
 
@@ -35,18 +31,8 @@ public:
 
     void Display();
 
-    const sf::Vector2f &GetSize() const {
-        return size_;
-    }
-
-    float GetAspectRatio() const {
-        return size_.x / size_.y;
-    }
-
-    // Drawing methods
-    void DrawLine(const Vector2 &a, const Vector2 &b, const Color &color, float thickness = 1.f) override;
-
-    void DrawTriangle(const Triangle &triangle) override;
+private:
+    // Drawing
 
 private:
     const sf::Vector2f size_;

@@ -92,6 +92,15 @@ public:
         return result;
     }
 
+    Vector<Size> operator-() const {
+        Vector<Size> result = *this;
+
+        for (float &v : result.values_)
+            v = -v;
+
+        return result;
+    }
+
     float GetLength() const {
         return sqrtf(GetLengthSquared());
     }
@@ -105,15 +114,17 @@ public:
         return length;
     }
 
-    void Normalize() {
+    Vector<Size> &Normalize() {
         const float length = GetLength();
 
         for (float &v : values_)
             v /= length;
+
+        return *this;
     }
 
     bool IsNormalized() const {
-        return std::fabs(GetLengthSquared() - 1) < std::numeric_limits<float>::epsilon();
+        return std::fabs(GetLength() - 1) <= std::numeric_limits<float>::epsilon();
     }
 
     template<size_t DesiredSize>
@@ -124,6 +135,32 @@ public:
 
         for (size_t i = 0; i < Size; i++)
             result[i] = values_[i];
+
+        return result;
+    }
+
+    float Dot(const Vector<Size> &rhs) const {
+        float res = 0;
+
+        for (size_t i = 0; i < Size; i++)
+            res += values_[i] * rhs.values_[i];
+
+        return res;
+    }
+
+    Vector<3> Cross(const Vector<3> &rhs) const {
+        static_assert(Size == 3);
+
+        return Vector<3>(values_[1] * rhs.values_[2] - values_[2] * rhs.values_[1],
+                         values_[2] * rhs.values_[0] - values_[0] * rhs.values_[2],
+                         values_[0] * rhs.values_[1] - values_[1] * rhs.values_[0]);
+    }
+
+    Vector<Size> operator*(const Vector<Size> &rhs) const {
+        Vector<Size> result;
+
+        for (size_t i = 0; i < Size; i++)
+            result[i] = values_[i] * rhs[i];
 
         return result;
     }

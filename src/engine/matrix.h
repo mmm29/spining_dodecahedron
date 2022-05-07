@@ -142,6 +142,42 @@ public:
         return true;
     }
 
+    template<size_t Size>
+    Vector<Size> GetRow(size_t row) const {
+        static_assert(Size <= Cols);
+
+        Vector<Size> result;
+
+        for (size_t i = 0; i < Size; i++)
+            result[i] = values_[row][i];
+
+        return result;
+    }
+
+    template<size_t Size>
+    void SetRow(size_t row, const Vector<Size> &values) {
+        for (size_t i = 0; i < Size; i++)
+            values_[row][i] = values[i];
+    }
+
+    template<size_t Size>
+    Vector<Size> GetColumn(size_t col) const {
+        static_assert(Size <= Rows);
+
+        Vector<Size> result;
+
+        for (size_t i = 0; i < Size; i++)
+            result[i] = values_[i][col];
+
+        return result;
+    }
+
+    template<size_t Size>
+    void SetColumn(size_t column, const Vector<Size> &values) {
+        for (size_t i = 0; i < Size; i++)
+            values_[i][column] = values[i];
+    }
+
     // Static methods
     static Matrix<Rows, Cols> Identity() {
         Matrix<Rows, Cols> result;
