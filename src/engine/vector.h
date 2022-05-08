@@ -165,6 +165,15 @@ public:
         return result;
     }
 
+    bool IsZero() const {
+        for (const float &v : values_) {
+            if (v != 0.f)
+                return false;
+        }
+
+        return true;
+    }
+
 private:
     std::array<float, Size> values_;
 };

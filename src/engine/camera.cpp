@@ -58,7 +58,7 @@ void Camera::UpdateRotation() {
     Matrix4 rotate_around_y = matrix::RotateAroundY(-rotation_angles_[0]);
     rotation_matrix_ = rotate_around_x * rotate_around_y;
 
-    direction_ = Vector3(-rotation_matrix_[0][2], rotation_matrix_[2][1], rotation_matrix_[2][2]).Normalize();
+    direction_ = rotation_matrix_.GetRow<3>(2);
 }
 
 void Camera::UpdateClippingPlanes() {
