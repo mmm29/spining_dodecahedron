@@ -5,6 +5,7 @@
 
 void Engine::Initialize(const ViewPort &viewport) {
     camera_ = std::make_shared<Camera>();
+    camera_->Initialize(viewport.GetAspectRatio());
 
     view_ = std::make_unique<View>();
     view_->SetViewPort(viewport);
@@ -72,10 +73,10 @@ void Engine::Draw() {
     draw_list_.AddFilledTriangle(Vector2(200, 50), Vector2(100, 150), Vector2(300, 150), Color::Blue());
 
     Vector4 res = view_->GetViewData().projection_matrix * Matrix4({
-                                                                           {1, 0, 0, 0},
-                                                                           {0, 1, 0, 0},
+                                                                           {1, 0, 0,  0},
+                                                                           {0, 1, 0,  0},
                                                                            {0, 0, -1, 0},
-                                                                           {0, 0, 0, 1}
+                                                                           {0, 0, 0,  1}
                                                                    }) * Vector4(-0.2, -0.2, 1, 1);
     res /= res[3];
     res = screen_space_matrix_ * res;

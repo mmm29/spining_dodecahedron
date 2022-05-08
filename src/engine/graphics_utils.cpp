@@ -1,4 +1,5 @@
 #include <cmath>
+#include <cassert>
 
 #include "graphics_utils.h"
 
@@ -17,6 +18,10 @@ Matrix4 CreateProjectionMatrix(float aspect_ratio, float fov, float near_z, floa
 }
 
 Matrix4 CreateViewMatrix(const Vector3 &position, const Vector3 &right, const Vector3 &up, const Vector3 &forward) {
+    assert(right.IsNormalized());
+    assert(up.IsNormalized());
+    assert(forward.IsNormalized());
+
     return Matrix4{
             {right[0],   right[1],   right[2],   -position.Dot(right)},
             {up[0],      up[1],      up[2],      -position.Dot(up)},

@@ -30,7 +30,7 @@ void View::UpdateMatrices() {
         return;
 
     data_.view_matrix = camera_->GetViewMatrix();
-    data_.projection_matrix = camera_->GetProjectionMatrix(viewport_aspect_ratio_);
+    data_.projection_matrix = camera_->GetProjectionMatrix();
     data_.view_projection_matrix = data_.projection_matrix * data_.view_matrix;
 }
 

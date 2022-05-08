@@ -99,8 +99,8 @@ void DrawMenu(MenuData *data) {
         Vector2 rotation_angles = active_camera->GetRotationAngles();
         ImGui::InputFloat2("Rotation angles", &rotation_angles[0], "%.8f", ImGuiInputTextFlags_ReadOnly);
 
-        Vector3 rotation = active_camera->GetRotation();
-        ImGui::InputFloat3("Rotation", &rotation[0], "%.8f", ImGuiInputTextFlags_ReadOnly);
+        Vector3 direction = active_camera->GetDirection();
+        ImGui::InputFloat3("Direction", &direction[0], "%.8f", ImGuiInputTextFlags_ReadOnly);
 
         {
             Matrix4 rotate_around_x = matrix::RotateAroundX(rotation_angles[1]);
@@ -232,30 +232,30 @@ int main() {
 
             auto camera = engine.GetActiveCamera();
             if (camera) {
-                Vector3 rotation = camera->GetRotation();
-                assert(rotation.IsNormalized() && "Rotation vector is not normalized.");
+                Vector3 direction = camera->GetDirection();
+                assert(direction.IsNormalized() && "Rotation vector is not normalized.");
 
                 const float current_moving_speed = moving_speed * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)
                                                                    ? fast_moving_speed_multiplier : 1.f);
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
                     camera->SetPosition(
-                            camera->GetPosition() + rotation * current_moving_speed * time_elapsed.asSeconds());
+                            camera->GetPosition() + direction * current_moving_speed * time_elapsed.asSeconds());
                 }
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
                     camera->SetPosition(
                             camera->GetPosition() -
-                            Vector3(rotation[2], 0, -rotation[0]) * current_moving_speed * time_elapsed.asSeconds());
+                            Vector3(direction[2], 0, -direction[0]) * current_moving_speed * time_elapsed.asSeconds());
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
                     camera->SetPosition(
-                            camera->GetPosition() - rotation * current_moving_speed * time_elapsed.asSeconds());
+                            camera->GetPosition() - direction * current_moving_speed * time_elapsed.asSeconds());
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
                     camera->SetPosition(
                             camera->GetPosition() +
-                            Vector3(rotation[2], 0, -rotation[0]) * current_moving_speed * time_elapsed.asSeconds());
+                            Vector3(direction[2], 0, -direction[0]) * current_moving_speed * time_elapsed.asSeconds());
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
                     camera->SetPosition(
@@ -270,8 +270,8 @@ int main() {
         ImGui::SFML::Update(window, time_elapsed);
 
         engine.Draw();
-//        if (menu_active)
-        DrawMenu(&menu_data);
+        if (menu_active)
+            DrawMenu(&menu_data);
 
         window.clear(background_color);
         RenderDrawList(&window, engine.GetDrawList());

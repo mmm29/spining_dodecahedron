@@ -4,7 +4,13 @@
 
 Camera::Camera() : position_(0, 0, 0),
                    rotation_angles_(0, 0) {
+}
+
+void Camera::Initialize(float aspect_ratio) {
+    aspect_ratio_ = aspect_ratio;
+
     UpdateRotation();
+    UpdateClippingPlanes();
 }
 
 void Camera::SetPosition(const Vector3 &position) {
@@ -24,26 +30,27 @@ const Vector3 &Camera::GetPosition() const {
     return position_;
 }
 
-const Vector3 &Camera::GetRotation() const {
-    return rotation_;
+const Vector3 &Camera::GetDirection() const {
+    return direction_;
 }
 
 void Camera::SetFieldOfView(float field_of_view) {
-    field_of_view_ = field_of_view;
+    fov_ = field_of_view;
+    UpdateClippingPlanes();
 }
 
 float Camera::GetFieldOfView() const {
-    return field_of_view_;
+    return fov_;
 }
 
 Matrix4 Camera::GetViewMatrix() const {
-    return CreateViewMatrix(position_, rotation_matrix_.GetRow<3>(0).Normalize(),
-                            rotation_matrix_.GetRow<3>(1).Normalize(),
-                            -rotation_matrix_.GetRow<3>(2).Normalize());
+    return CreateViewMatrix(position_, rotation_matrix_.GetRow<3>(0),
+                            rotation_matrix_.GetRow<3>(1),
+                            -rotation_matrix_.GetRow<3>(2));
 }
 
-Matrix4 Camera::GetProjectionMatrix(float aspect_ratio) const {
-    return CreateProjectionMatrix(aspect_ratio, field_of_view_, near_z, far_z);
+Matrix4 Camera::GetProjectionMatrix() const {
+    return CreateProjectionMatrix(aspect_ratio_, fov_, near_z, far_z);
 }
 
 void Camera::UpdateRotation() {
@@ -51,5 +58,30 @@ void Camera::UpdateRotation() {
     Matrix4 rotate_around_y = matrix::RotateAroundY(-rotation_angles_[0]);
     rotation_matrix_ = rotate_around_x * rotate_around_y;
 
-    rotation_ = Vector3(-rotation_matrix_[0][2], rotation_matrix_[2][1], rotation_matrix_[2][2]).Normalize();
+    direction_ = Vector3(-rotation_matrix_[0][2], rotation_matrix_[2][1], rotation_matrix_[2][2]).Normalize();
+}
+
+void Camera::UpdateClippingPlanes() {
+    clipping_planes_.clear();
+    clipping_planes_.reserve(6);
+
+    // Far and near planes
+    clipping_planes_.emplace_back(Vector3(0, 0, 1), Vector3(0, 0, near_z));
+    clipping_planes_.emplace_back(Vector3(0, 0, 1), Vector3(0, 0, far_z));
+
+    const float half_fov = fov_ / 2;
+    const float cos_half_fov = std::cos(half_fov);
+    const float sin_half_fov = std::sin(half_fov);
+
+    // Up and down planes
+    clipping_planes_.emplace_back(Vector3(0, cos_half_fov, sin_half_fov), Vector3());
+    clipping_planes_.emplace_back(Vector3(0, -cos_half_fov, sin_half_fov), Vector3());
+
+    const float half_fov_with_aspect = std::atan(aspect_ratio_ * std::tan(half_fov));
+    const float cos_half_fov_with_aspect = std::cos(half_fov_with_aspect);
+    const float sin_half_fov_with_aspect = std::sin(half_fov_with_aspect);
+
+    // Left and right planes
+    clipping_planes_.emplace_back(Vector3(-cos_half_fov_with_aspect, 0, sin_half_fov_with_aspect), Vector3());
+    clipping_planes_.emplace_back(Vector3(cos_half_fov_with_aspect, 0, sin_half_fov_with_aspect), Vector3());
 }
