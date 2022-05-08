@@ -71,7 +71,12 @@ void Engine::Draw() {
 
     draw_list_.AddFilledTriangle(Vector2(200, 50), Vector2(100, 150), Vector2(300, 150), Color::Blue());
 
-    Vector4 res = view_->GetViewData().projection_matrix * Vector4(0, -0.5, -1, 1);
+    Vector4 res = view_->GetViewData().projection_matrix * Matrix4({
+                                                                           {1, 0, 0, 0},
+                                                                           {0, 1, 0, 0},
+                                                                           {0, 0, -1, 0},
+                                                                           {0, 0, 0, 1}
+                                                                   }) * Vector4(-0.2, -0.2, 1, 1);
     res /= res[3];
     res = screen_space_matrix_ * res;
     draw_list_.AddLine(Vector2(res[0], res[1]), Vector2(res[0], res[1] + 20), Color::Black());

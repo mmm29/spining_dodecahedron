@@ -228,38 +228,42 @@ int main() {
 
         {
             static const float moving_speed = 2.f;
+            static const float fast_moving_speed_multiplier = 2.f;
 
             auto camera = engine.GetActiveCamera();
             if (camera) {
                 Vector3 rotation = camera->GetRotation();
                 assert(rotation.IsNormalized() && "Rotation vector is not normalized.");
 
+                const float current_moving_speed = moving_speed * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)
+                                                                   ? fast_moving_speed_multiplier : 1.f);
+
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
                     camera->SetPosition(
-                            camera->GetPosition() + rotation * moving_speed * time_elapsed.asSeconds());
+                            camera->GetPosition() + rotation * current_moving_speed * time_elapsed.asSeconds());
                 }
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
                     camera->SetPosition(
                             camera->GetPosition() -
-                            Vector3(rotation[2], 0, -rotation[0]) * moving_speed * time_elapsed.asSeconds());
+                            Vector3(rotation[2], 0, -rotation[0]) * current_moving_speed * time_elapsed.asSeconds());
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
                     camera->SetPosition(
-                            camera->GetPosition() - rotation * moving_speed * time_elapsed.asSeconds());
+                            camera->GetPosition() - rotation * current_moving_speed * time_elapsed.asSeconds());
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
                     camera->SetPosition(
                             camera->GetPosition() +
-                            Vector3(rotation[2], 0, -rotation[0]) * moving_speed * time_elapsed.asSeconds());
+                            Vector3(rotation[2], 0, -rotation[0]) * current_moving_speed * time_elapsed.asSeconds());
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
                     camera->SetPosition(
-                            camera->GetPosition() + Vector3(0, moving_speed, 0) * time_elapsed.asSeconds());
+                            camera->GetPosition() + Vector3(0, current_moving_speed, 0) * time_elapsed.asSeconds());
 
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
                     camera->SetPosition(
-                            camera->GetPosition() + Vector3(0, -moving_speed, 0) * time_elapsed.asSeconds());
+                            camera->GetPosition() + Vector3(0, -current_moving_speed, 0) * time_elapsed.asSeconds());
             }
         }
 

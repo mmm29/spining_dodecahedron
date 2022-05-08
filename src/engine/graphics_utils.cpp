@@ -9,10 +9,10 @@ Matrix4 CreateProjectionMatrix(float aspect_ratio, float fov, float near_z, floa
     const float far_near_over_distance = near_z * far_over_distance;
 
     return Matrix4({
-                           {1 / (aspect_ratio * fov_tan), 0,           0,                 0},
-                           {0,                            1 / fov_tan, 0,                 0},
-                           {0,                            0,           far_over_distance, -far_near_over_distance},
-                           {0,                            0,           -1,                0}
+                           {1 / (aspect_ratio * fov_tan), 0,           0,                  0},
+                           {0,                            1 / fov_tan, 0,                  0},
+                           {0,                            0,           -far_over_distance, -far_near_over_distance},
+                           {0,                            0,           -1,                 0}
                    });
 }
 
