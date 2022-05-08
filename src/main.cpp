@@ -9,6 +9,8 @@
 
 #include "engine/matrix_transform.h"
 
+#include "engine/angle.h"
+
 template<size_t Rows, size_t Cols>
 void Print(const Matrix<Rows, Cols> &matrix) {
     printf("{\n");
@@ -91,9 +93,9 @@ void DrawMenu(MenuData *data) {
             active_camera->SetPosition(camera_position);
 
         {
-            Vector2 rotation_angles = active_camera->GetRotationAngles() * (180 / M_PI);
+            Vector2 rotation_angles = active_camera->GetRotationAngles() * Degree(1);
             if (ImGui::DragFloat2("Camera rotation", &rotation_angles[0], 1, -360, 360))
-                active_camera->SetRotationAngles(rotation_angles * (M_PI / 180));
+                active_camera->SetRotationAngles(rotation_angles * Radians(1));
         }
 
         Vector2 rotation_angles = active_camera->GetRotationAngles();
@@ -216,7 +218,7 @@ int main() {
                         static const float mouse_sensitivity = 1.f; // TODO: use it
 
                         Vector2 rotation_angeles_change(mouse_movement.x, -mouse_movement.y);
-                        rotation_angeles_change *= (M_PI / 1000.f);
+                        rotation_angeles_change *= Radians(9.f / 50.f);
 
                         camera->SetRotationAngles(camera->GetRotationAngles() + rotation_angeles_change);
                     } else if (event.type == sf::Event::MouseEntered) {
@@ -276,7 +278,7 @@ int main() {
         ImGui::SFML::Update(window, time_elapsed);
 
         engine.Draw();
-        if (menu_active)
+//        if (menu_active)
             DrawMenu(&menu_data);
 
         window.clear(background_color);

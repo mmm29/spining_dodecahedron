@@ -7,6 +7,7 @@
 #include "vector.h"
 #include "matrix.h"
 #include "plane.h"
+#include "angle.h"
 
 class Camera {
 public:
@@ -47,7 +48,7 @@ private:
 
     Vector2 rotation_angles_;
 
-    float fov_ = 55 * (M_PI / 180);
+    float fov_ = Radians(55);
 
     float near_z = 0.1f;
 
