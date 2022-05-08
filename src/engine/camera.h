@@ -23,7 +23,7 @@ public:
 
     const Vector3 &GetPosition() const;
 
-    const Vector3 &GetDirection() const;
+    Vector3 GetDirection() const;
 
     // Field of view
     void SetFieldOfView(float field_of_view);
@@ -41,8 +41,6 @@ private:
 
 private:
     Vector3 position_;
-
-    Vector3 direction_;
 
     Matrix4 rotation_matrix_;
 
