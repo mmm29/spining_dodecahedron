@@ -1,51 +1,37 @@
 #pragma once
 
-#include <cmath>
-#include <array>
 #include <vector>
+#include <memory>
 
-#include "vector.h"
-#include "matrix.h"
+#include "object.h"
 #include "plane.h"
 #include "angle.h"
+#include "world.h"
 
-class Camera {
+struct CameraInitializationParameters {
+    float aspect_ratio;
+
+    std::weak_ptr<World> world;
+};
+
+class Camera : public Object {
 public:
-    Camera();
+    void Initialize(const CameraInitializationParameters &params);
 
-    void Initialize(float aspect_ratio);
-
-    void SetPosition(const Vector3 &position);
-
-    const Vector2 &GetRotationAngles() const;
-
-    void SetRotationAngles(const Vector2 &rotation_angles);
-
-    const Vector3 &GetPosition() const;
-
-    Vector3 GetDirection() const;
-
-    // Field of view
+public:
     void SetFieldOfView(float field_of_view);
 
     float GetFieldOfView() const;
 
+public:
     Matrix4 GetViewMatrix() const;
 
     Matrix4 GetProjectionMatrix() const;
 
 private:
-    void UpdateRotation();
-
     void UpdateClippingPlanes();
 
 private:
-    Vector3 position_;
-
-    Matrix4 rotation_matrix_;
-
-    Vector2 rotation_angles_;
-
     float fov_ = Radians(55);
 
     float near_z = 0.1f;
@@ -55,4 +41,7 @@ private:
     float aspect_ratio_;
 
     std::vector<Plane> clipping_planes_;
+
+private:
+    std::weak_ptr<World> world_;
 };

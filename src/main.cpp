@@ -278,7 +278,7 @@ int main() {
         ImGui::SFML::Update(window, time_elapsed);
 
         engine.Draw();
-//        if (menu_active)
+        if (menu_active)
             DrawMenu(&menu_data);
 
         window.clear(background_color);

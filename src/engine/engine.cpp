@@ -5,7 +5,10 @@
 
 void Engine::Initialize(const ViewPort &viewport) {
     camera_ = std::make_shared<Camera>();
-    camera_->Initialize(viewport.GetAspectRatio());
+    camera_->Initialize(CameraInitializationParameters{
+            .aspect_ratio = viewport.GetAspectRatio(),
+            .world = std::weak_ptr<World>()
+    });
 
     view_ = std::make_unique<View>();
     view_->SetViewPort(viewport);

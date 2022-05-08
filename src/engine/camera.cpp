@@ -1,46 +1,12 @@
-#include "camera.h"
 #include "graphics_utils.h"
-#include "matrix_transform.h"
 
-Camera::Camera() : position_(0, 0, 0),
-                   rotation_angles_(0, 0) {
-}
+#include "camera.h"
 
-void Camera::Initialize(float aspect_ratio) {
-    aspect_ratio_ = aspect_ratio;
+void Camera::Initialize(const CameraInitializationParameters &params) {
+    aspect_ratio_ = params.aspect_ratio;
+    world_ = params.world;
 
-    UpdateRotation();
     UpdateClippingPlanes();
-}
-
-void Camera::SetPosition(const Vector3 &position) {
-    position_ = position;
-}
-
-const Vector2 &Camera::GetRotationAngles() const {
-    return rotation_angles_;
-}
-
-void Camera::SetRotationAngles(const Vector2 &rotation_angles) {
-    // Strip value greater than 360 magnitude.
-    const float yaw = std::fmod(rotation_angles[0], Radians(360));
-
-    // Strip value greater than 360 magnitude.
-    float pitch = std::fmod(rotation_angles[1], Radians(360));
-
-    // Limit the pitch angle range to [-85 degree, 85 degree].
-    pitch = std::fmax(std::fmin(pitch, Radians(85)), Radians(-85));
-
-    rotation_angles_ = Vector2(yaw, pitch);
-    UpdateRotation();
-}
-
-const Vector3 &Camera::GetPosition() const {
-    return position_;
-}
-
-Vector3 Camera::GetDirection() const {
-    return rotation_matrix_.GetRow<3>(2);
 }
 
 void Camera::SetFieldOfView(float field_of_view) {
@@ -53,19 +19,13 @@ float Camera::GetFieldOfView() const {
 }
 
 Matrix4 Camera::GetViewMatrix() const {
-    return CreateViewMatrix(position_, rotation_matrix_.GetRow<3>(0),
-                            rotation_matrix_.GetRow<3>(1),
-                            -rotation_matrix_.GetRow<3>(2));
+    return CreateViewMatrix(position_, transformation_matrix_.GetRow<3>(0),
+                            transformation_matrix_.GetRow<3>(1),
+                            -transformation_matrix_.GetRow<3>(2));
 }
 
 Matrix4 Camera::GetProjectionMatrix() const {
     return CreateProjectionMatrix(aspect_ratio_, fov_, near_z, far_z);
-}
-
-void Camera::UpdateRotation() {
-    Matrix4 rotate_around_x = matrix::RotateAroundX(rotation_angles_[1]);
-    Matrix4 rotate_around_y = matrix::RotateAroundY(-rotation_angles_[0]);
-    rotation_matrix_ = rotate_around_x * rotate_around_y;
 }
 
 void Camera::UpdateClippingPlanes() {
