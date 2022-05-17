@@ -30,7 +30,7 @@ Plane::Intersection Plane::Intersect(const Vector3 &p1, const Vector3 &p2) const
     if ((distance_to_p1 > 0) == (distance_to_p2 > 0))
         return {false}; // Points are on the same side of the plane (they don't intersect the plane).
 
-    const float t = -(normal_dot_p1 + normal_dot_point_) / normal_dot_direction;
+    const float t = (normal_dot_point_ - normal_dot_p1) / normal_dot_direction;
 
     return {true, p1 + direction * t, t};
 }
