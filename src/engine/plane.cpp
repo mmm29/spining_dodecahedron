@@ -1,7 +1,10 @@
+#include <cassert>
 #include "plane.h"
 
 Plane::Plane(const Vector3 &normal, const Vector3 &point) : normal_(normal), point_(point),
-                                                            normal_dot_point_(normal_.Dot(point_)) {}
+                                                            normal_dot_point_(normal_.Dot(point_)) {
+    assert(normal.IsNormalized());
+}
 
 const Vector3 &Plane::GetNormal() const {
     return normal_;

@@ -34,12 +34,13 @@ private:
 private:
     float fov_ = Radians(55);
 
-    float near_z = 0.1f;
+    float near_z = 0.01f;
 
     float far_z = 100.f;
 
     float aspect_ratio_;
 
+public:// TODO: remove
     std::vector<Plane> clipping_planes_;
 
 private:

@@ -65,7 +65,7 @@ public:
 
         Vector2 rotation_angeles_change(x_offset, -y_offset);
 
-        static const float kDefaultCameraRotation = Radians(9.f / 50.f);
+        static const float kDefaultCameraRotation = Radians(3.f / 25.f);
         rotation_angeles_change *= kDefaultCameraRotation * mouse_sensitivity_;
 
         camera->SetRotationAngles(camera->GetRotationAngles() + rotation_angeles_change);
