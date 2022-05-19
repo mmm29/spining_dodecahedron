@@ -1,4 +1,4 @@
-# Simple 3D engine in C++
+# Simple 3D software renderer engine in C++
 
 ## Third-party
 
