@@ -25,4 +25,4 @@ file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
 add_executable(spinning_dodecahedron WIN32 ${SOURCE_FILES} ${IMGUI_SOURCES})
 
 # Libraries
-target_link_libraries(spinning_dodecahedron PUBLIC sfml-window sfml-graphics opengl32)
+target_link_libraries(spinning_dodecahedron PUBLIC sfml-window sfml-graphics ${OPENGL_LIBRARIES})
