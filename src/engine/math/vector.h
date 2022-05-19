@@ -124,7 +124,7 @@ public:
     }
 
     bool IsNormalized() const {
-        return std::fabs(GetLength() - 1) <= std::numeric_limits<float>::epsilon();
+        return std::abs(GetLength() - 1) <= std::numeric_limits<float>::epsilon();
     }
 
     template<size_t DesiredSize>

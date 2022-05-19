@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "math/vector.h"
-#include "color.h"
+#include "math/color.h"
 
 namespace draw {
 

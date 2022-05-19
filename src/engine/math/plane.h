@@ -6,25 +6,42 @@ class Plane {
 public:
     Plane(const Vector3 &normal, const Vector3 &point);
 
+    Plane(const Vector3 &normal, float distance);
+
     const Vector3 &GetNormal() const;
 
-    const Vector3 &GetPoint() const;
-
 public:
-    struct Intersection {
-        bool exists;
+    float DistanceTo(const Vector3 &p) const;
 
+    struct Intersection {
+        // Indicates whether the ray is orthogonal to the plane.
+        bool orthogonal;
+
+        // The intersection time describes at which multiple of the ray direction the ray hit the plane.
+        float t;
+
+        // The point where the ray hits the plane.
         Vector3 point;
 
-        float t;
+    public:
+        bool Exists() const {
+            return !orthogonal && t >= 0 && t <= 1;
+        }
+
+        Vector3 &Point() {
+            return point;
+        }
     };
 
-    Intersection Intersect(const Vector3 &p1, const Vector3 &p2) const;
+    Intersection IntersectLine(const Vector3 &p1, const Vector3 &p2) const;
 
-    float DistanceTo(const Vector3 &p) const;
+    Intersection IntersectRay(const Vector3 &start, const Vector3 &direction) const;
+
+    bool IsInside(const Vector3& point) const;
+
+    bool IsOutside(const Vector3& point) const;
 
 private:
     const Vector3 normal_;
-    const Vector3 point_;
-    const float normal_dot_point_;
+    const float distance_;
 };

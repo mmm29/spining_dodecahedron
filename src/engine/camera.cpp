@@ -41,14 +41,14 @@ void Camera::UpdateClippingPlanes() {
     const float sin_half_fov = std::sin(half_fov);
 
     // Up and down planes
-    clipping_planes_.emplace_back(-Vector3(0, cos_half_fov, sin_half_fov), Vector3());
-    clipping_planes_.emplace_back(-Vector3(0, -cos_half_fov, sin_half_fov), Vector3());
+    clipping_planes_.emplace_back(-Vector3(0, cos_half_fov, sin_half_fov), 0);
+    clipping_planes_.emplace_back(-Vector3(0, -cos_half_fov, sin_half_fov), 0);
 
     const float half_fov_with_aspect = std::atan(aspect_ratio_ * std::tan(half_fov));
     const float cos_half_fov_with_aspect = std::cos(half_fov_with_aspect);
     const float sin_half_fov_with_aspect = std::sin(half_fov_with_aspect);
 
     // Left and right planes
-    clipping_planes_.emplace_back(-Vector3(-cos_half_fov_with_aspect, 0, sin_half_fov_with_aspect), Vector3());
-    clipping_planes_.emplace_back(-Vector3(cos_half_fov_with_aspect, 0, sin_half_fov_with_aspect), Vector3());
+    clipping_planes_.emplace_back(-Vector3(-cos_half_fov_with_aspect, 0, sin_half_fov_with_aspect), 0);
+    clipping_planes_.emplace_back(-Vector3(cos_half_fov_with_aspect, 0, sin_half_fov_with_aspect), 0);
 }

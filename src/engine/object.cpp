@@ -22,7 +22,7 @@ void Object::SetRotationAngles(const Vector2 &rotation_angles) {
     float pitch = std::fmod(rotation_angles[1], Radians(360));
 
     // Limit the pitch angle range to [-85 degree, 85 degree].
-    pitch = std::fmax(std::fmin(pitch, Radians(85)), Radians(-85));
+    pitch = std::max(std::min(pitch, Radians(85)), Radians(-85));
 
     rotation_angles_ = Vector2(yaw, pitch);
 
