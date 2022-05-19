@@ -10,6 +10,8 @@ void Engine::Initialize(const ViewPort &viewport) {
             .world = std::weak_ptr<World>()
     });
 
+//    camera_->SetPosition(Vector3(0, 0, 0.31898));
+
     view_ = std::make_unique<View>();
     view_->SetViewPort(viewport);
     view_->SetCamera(camera_);
@@ -21,14 +23,29 @@ void Engine::Draw() {
     draw_list_.Clear();
 
     const auto to_screen = [&](const Vector3 &world_pos) -> Vector2 {
+//        assert(world_pos[2] > -std::numeric_limits<float>::epsilon());
+
         Vector4 res(world_pos[0], world_pos[1], world_pos[2], 1.f);
 //        res = view_->GetViewData().view_matrix * res;
         res = view_->GetViewData().projection_matrix * res;
+//        assert(res[0] >= -1 && res[0] <= 1 && "X value is not in range [-1,1]");
+//        assert(res[1] >= -1 && res[1] <= 1 && "Y value is not in range [-1,1]");
+
         res = screen_space_matrix_ * res;
-//        assert(res[3] >= 0 && res[3] <= 1 && "Z value must be normalized");
+        assert(res[3] > 0 && "W value must be greater than zero");
+
         res /= res[3];
+//        assert(res[2] >= 0 && res[2] <= 1 && "Z value must be normalized");
+
         return Vector2(res[0], res[1]);
     };
+
+    {
+        static Plane plane(Vector3(0, 0, -1), Vector3(0, 0, 0.1));
+        Plane::Intersection intersection = plane.Intersect(Vector3(-1, 0, 1.31897998), Vector3(1, 0, -1.68102002));
+        assert(intersection.exists &&
+               std::fabs(intersection.point[2] - plane.GetPoint()[2]) < std::numeric_limits<float>::epsilon());
+    }
 
     const auto draw_line = [&](Vector3 from, Vector3 to, const Color &color) {
         Vector4 from4(from[0], from[1], from[2], 1.f);
@@ -43,14 +60,17 @@ void Engine::Draw() {
             const float from_distance = clipping_plane.DistanceTo(from);
             const float to_distance = clipping_plane.DistanceTo(to);
 
-            if (from_distance <= 0 || to_distance <= 0) {
-                if (from_distance <= 0 && to_distance <= 0)
-                    return;
+            const bool from_outside = from_distance < 0;
+            const bool to_outside = to_distance < 0;
+
+            if (from_outside || to_outside) {
+                if (from_outside && to_outside)
+                    return; // The line is totally outside the plane. Skip.
 
                 Plane::Intersection intersection = clipping_plane.Intersect(from, to);
                 assert(intersection.exists);
 
-                if (from_distance <= 0)
+                if (from_outside)
                     from = intersection.point;
                 else
                     to = intersection.point;
@@ -61,6 +81,9 @@ void Engine::Draw() {
     };
 
     view_->UpdateMatrices();
+
+//    draw_line(Vector3(0, 0, -1), Vector3(0, 0, 1), Color::Black());
+//    return;
 
     {
         static const Vector2 net_corners[2] = {
@@ -112,4 +135,14 @@ draw::DrawList *Engine::GetDrawList() {
 
 std::shared_ptr<Camera> Engine::GetActiveCamera() const {
     return camera_;
+}
+
+void Engine::AttachController(const std::shared_ptr<Controller> &controller) {
+    controllers_.push_back(controller);
+    controller->OnAttach(this);
+}
+
+void Engine::Update(float ts) {
+    for (const std::shared_ptr<Controller> &controller : controllers_)
+        controller->Update(ts);
 }

@@ -55,11 +55,16 @@ static sf::Vector2i GetMouseMovement(sf::RenderWindow &window) {
     return sf::Mouse::getPosition(window) - GetCenterPosition(window);
 }
 
-class CameraController {
+class CameraController : public Controller {
 public:
-    explicit CameraController(Engine *engine) : engine_(engine) {}
+    void OnAttach(Engine *engine) override {
+        engine_ = engine;
+    }
 
     void HandleMouseMovement(int x_offset, int y_offset) {
+        if (!engine_)
+            return;
+
         auto camera = engine_->GetActiveCamera();
         assert(camera && "No active camera.");
 
@@ -71,7 +76,9 @@ public:
         camera->SetRotationAngles(camera->GetRotationAngles() + rotation_angeles_change);
     }
 
-    void Update(float time_elapsed) {
+    void Update(float ts) override {
+        assert(engine_ && "OnAttach has not been called.");
+
         auto camera = engine_->GetActiveCamera();
         assert(camera && "No active camera.");
 
@@ -105,7 +112,7 @@ public:
             offset -= Vector3(0, 1, 0);
 
         if (!offset.IsZero()) {
-            offset *= moving_speed_ * time_elapsed;
+            offset *= moving_speed_ * ts;
 
             // Fast
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
@@ -116,7 +123,7 @@ public:
     }
 
 private:
-    Engine *const engine_;
+    Engine *engine_ = nullptr;
 
 private:
     float mouse_sensitivity_ = 1.f;
@@ -276,7 +283,8 @@ int main() {
     Engine engine;
     engine.Initialize(ViewPort(static_cast<float>(video_mode.width), static_cast<float>(video_mode.height)));
 
-    CameraController camera_controller(&engine);
+    auto camera_controller = std::make_shared<CameraController>();
+    engine.AttachController(camera_controller);
 
     Renderer renderer(window);
 
@@ -315,7 +323,7 @@ int main() {
                             sf::Mouse::setPosition(center_position, window);
 
                         sf::Vector2i mouse_movement = mouse_position - center_position;
-                        camera_controller.HandleMouseMovement(mouse_movement.x, mouse_movement.y);
+                        camera_controller->HandleMouseMovement(mouse_movement.x, mouse_movement.y);
                     } else if (event.type == sf::Event::MouseEntered) {
                         SetMouseInCenter(window);
                     }
@@ -325,7 +333,7 @@ int main() {
 
         // Update controllers
         menu.Update(time_elapsed);
-        camera_controller.Update(time_elapsed.asSeconds());
+        engine.Update(time_elapsed.asSeconds());
 
         // Drawings
         engine.Draw();
