@@ -1,6 +1,12 @@
-# Simple 3D engine for dodecahedron rendering
+# Simple 3D engine in C++
 
-### Useful links
+## Third-party
 
-Projection, clipping - http://graphics.cs.cmu.edu/nsp/course/15-462/Spring04/slides/06-viewing.pdf
-Intersection of a line and a plane - http://www.songho.ca/math/line/line.html#intersect_lineplane
+* ImGui ([GitHub](https://github.com/ocornut/imgui), [MIT License](https://github.com/ocornut/imgui/blob/master/LICENSE.txt))
+* SFML ([GitHub](https://github.com/SFML/SFML), [zlib License](https://github.com/SFML/SFML/blob/master/license.md))
+
+## Useful links
+
+Projection, clipping - [link](http://graphics.cs.cmu.edu/nsp/course/15-462/Spring04/slides/06-viewing.pdf)
+
+Intersection of a line and a plane - [link](http://www.songho.ca/math/line/line.html#intersect_lineplane)
