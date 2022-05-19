@@ -1,5 +1,5 @@
 #include <cassert>
-#include "plane.h"
+#include "math/plane.h"
 
 Plane::Plane(const Vector3 &normal, const Vector3 &point) : normal_(normal), point_(point),
                                                             normal_dot_point_(normal_.Dot(point_)) {

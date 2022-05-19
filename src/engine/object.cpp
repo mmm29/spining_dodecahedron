@@ -1,5 +1,5 @@
-#include "angle.h"
-#include "matrix_transform.h"
+#include "math/angle.h"
+#include "math/matrix_transform.h"
 #include "object.h"
 
 Object::Object() {

@@ -1,4 +1,4 @@
-#include "graphics_utils.h"
+#include "math/graphics_utils.h"
 
 #include "camera.h"
 

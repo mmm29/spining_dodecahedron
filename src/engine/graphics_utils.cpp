@@ -1,7 +1,7 @@
 #include <cmath>
 #include <cassert>
 
-#include "graphics_utils.h"
+#include "math/graphics_utils.h"
 
 Matrix4 CreateProjectionMatrix(float aspect_ratio, float fov, float near_z, float far_z) {
     const float fov_tan = std::tan(fov / 2);

@@ -4,8 +4,8 @@
 #include <memory>
 
 #include "object.h"
-#include "plane.h"
-#include "angle.h"
+#include "math/plane.h"
+#include "math/angle.h"
 #include "world.h"
 
 struct CameraInitializationParameters {

@@ -3,7 +3,7 @@
 #include <list>
 #include <vector>
 
-#include "vector.h"
+#include "math/vector.h"
 #include "color.h"
 
 namespace draw {

@@ -6,8 +6,7 @@
 #include <imgui-SFML.h>
 
 #include "engine/engine.h"
-
-#include "engine/matrix_transform.h"
+#include "engine/math/matrix_transform.h"
 
 static sf::Color ColorToSfmlColor(const Color &color) {
     return sf::Color(color.r, color.g, color.b, color.a);

@@ -6,7 +6,7 @@
 #include "camera.h"
 #include "view.h"
 #include "draw_list.h"
-#include "matrix.h"
+#include "math/matrix.h"
 #include "controller.h"
 
 class Engine {

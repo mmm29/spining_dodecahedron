@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "camera.h"
-#include "matrix.h"
+#include "math/matrix.h"
 #include "viewport.h"
 
 struct ViewData {

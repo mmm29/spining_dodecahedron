@@ -1,7 +1,7 @@
 #include <cassert>
 
 #include "engine.h"
-#include "graphics_utils.h"
+#include "math/graphics_utils.h"
 
 void Engine::Initialize(const ViewPort &viewport) {
     camera_ = std::make_shared<Camera>();
