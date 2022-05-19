@@ -49,7 +49,7 @@ void Menu::Draw(DrawData *data) {
         Vector2 rotation_angles = active_camera->GetRotationAngles();
         ImGui::InputFloat2("Rotation angles", &rotation_angles[0], "%.8f", ImGuiInputTextFlags_ReadOnly);
 
-        Vector3 direction = active_camera->GetDirection();
+        Vector3 direction = active_camera->GetDirectionForward();
         ImGui::InputFloat3("Direction", &direction[0], "%.8f", ImGuiInputTextFlags_ReadOnly);
 
         {

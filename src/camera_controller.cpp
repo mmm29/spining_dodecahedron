@@ -31,7 +31,7 @@ void CameraController::Update(float ts) {
     auto camera = engine_->GetActiveCamera();
     assert(camera && "No active camera.");
 
-    Vector3 direction = camera->GetDirection();
+    Vector3 direction = camera->GetDirectionForward();
     assert(direction.IsNormalized() && "Rotation vector is not normalized.");
 
     Vector3 offset;

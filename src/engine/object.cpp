@@ -33,7 +33,7 @@ const Vector2 &Object::GetRotationAngles() const {
     return rotation_angles_;
 }
 
-Vector3 Object::GetDirection() const {
+Vector3 Object::GetDirectionForward() const {
     return direction_;
 }
 

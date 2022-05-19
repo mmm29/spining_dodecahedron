@@ -15,7 +15,7 @@ public:
 
     const Vector2 &GetRotationAngles() const;
 
-    Vector3 GetDirection() const;
+    Vector3 GetDirectionForward() const;
 
 private:
     void UpdateTransformationMatrix();
