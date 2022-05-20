@@ -28,8 +28,6 @@ private:
 
 private:
     // 3D projection
-    std::shared_ptr<Camera> camera_;
-
     std::unique_ptr<View> view_;
 
 private:

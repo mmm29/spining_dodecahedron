@@ -6,15 +6,15 @@
 #include "math/frustum.h"
 
 void Engine::Initialize(const ViewPort &viewport) {
-    camera_ = std::make_shared<Camera>();
-    camera_->Initialize(CameraInitializationParameters{
+    auto camera = std::make_shared<Camera>();
+    camera->Initialize(CameraInitializationParameters{
             .aspect_ratio = viewport.GetAspectRatio(),
             .world = std::weak_ptr<World>()
     });
 
     view_ = std::make_unique<View>();
     view_->SetViewPort(viewport);
-    view_->SetCamera(camera_);
+    view_->SetCamera(camera);
 
     screen_space_matrix_ = CreateScreenSpaceMatrix(Vector2(viewport.width, viewport.height));
 }
@@ -134,7 +134,7 @@ draw::DrawList *Engine::GetDrawList() {
 }
 
 std::shared_ptr<Camera> Engine::GetActiveCamera() const {
-    return camera_;
+    return view_->GetCamera();
 }
 
 void Engine::AttachController(const std::shared_ptr<Controller> &controller) {
