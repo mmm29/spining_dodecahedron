@@ -4,17 +4,18 @@
 #include "math/graphics_utils.h"
 
 Matrix4 CreateProjectionMatrix(float aspect_ratio, float fov, float near_z, float far_z) {
-    const float fov_tan = std::tan(fov / 2);
-    const float far_near_distance = far_z - near_z;
-    const float far_over_distance = far_z / far_near_distance;
-    const float far_near_over_distance = near_z * far_over_distance;
+    const float half_fov_tan = std::tan(fov / 2);
 
-    return Matrix4({
-                           {1 / (aspect_ratio * fov_tan), 0,           0,                  0},
-                           {0,                            1 / fov_tan, 0,                  0},
-                           {0,                            0,           -far_over_distance, -far_near_over_distance},
-                           {0,                            0,           -1,                 0}
-                   });
+    Matrix4 res;
+    res.SetZero();
+
+    res[0][0] = 1 / (aspect_ratio * half_fov_tan);
+    res[1][1] = 1 / half_fov_tan;
+    res[2][2] = far_z / (near_z - far_z);
+    res[2][3] = (far_z * near_z) / (near_z - far_z);
+    res[3][2] = -1;
+
+    return res;
 }
 
 Matrix4 CreateViewMatrix(const Vector3 &position, const Vector3 &right, const Vector3 &up, const Vector3 &forward) {
