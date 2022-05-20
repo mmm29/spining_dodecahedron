@@ -1,8 +1,16 @@
 #pragma once
 
+#include <memory>
+#include <unordered_map>
+
 #include <SFML/Graphics.hpp>
 
+#include "engine/engine.h"
+#include "engine/math/color.h"
+
 class Engine;
+
+class Camera;
 
 class Menu {
 public:
@@ -15,6 +23,8 @@ public:
     struct DrawData {
         sf::Color *window_background_color;
         Engine *engine;
+
+        std::unordered_map<std::string, CameraInfo> cameras;
     };
 
     void Draw(DrawData *data);

@@ -23,10 +23,20 @@ public:
 
     float GetFieldOfView() const;
 
+    float GetNearZ() const;
+
+    void SetNearZ(float near_z);
+
+    float GetFarZ() const;
+
+    void SetFarZ(float far_z);
+
 public:
     Matrix4 ComputeViewMatrix() const;
 
     Matrix4 ComputeProjectionMatrix() const;
+
+    Matrix4 ComputeViewProjectionMatrix() const;
 
 private:
     void ResetCachedMatrices();
@@ -34,9 +44,9 @@ private:
 private:
     float fov_ = Radians(60);
 
-    float near_z = 0.1f;
+    float near_z_ = 0.1f;
 
-    float far_z = 100.f;
+    float far_z_ = 100.f;
 
     float aspect_ratio_;
 

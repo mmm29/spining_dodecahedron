@@ -54,6 +54,8 @@ static sf::Vector2i GetMouseMovement(sf::RenderWindow &window) {
     return sf::Mouse::getPosition(window) - GetCenterPosition(window);
 }
 
+std::unordered_map<std::string, CameraInfo> *cameras; // TODO: remove it
+
 int main() {
     sf::ContextSettings settings;
     settings.depthBits = 12;
@@ -87,6 +89,10 @@ int main() {
     Menu::DrawData menu_data;
     menu_data.window_background_color = &background_color;
     menu_data.engine = &engine;
+    menu_data.cameras["main_camera"] = CameraInfo{
+            .camera = engine.GetActiveCamera()
+    };
+    cameras = &menu_data.cameras; // TODO: remove it
 
     sf::Clock delta_clock;
 

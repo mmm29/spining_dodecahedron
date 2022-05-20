@@ -2,7 +2,6 @@
 #include <imgui-SFML.h>
 
 #include "engine/engine.h"
-#include "engine/math/matrix_transform.h"
 
 #include "menu.h"
 
@@ -15,77 +14,146 @@ void Menu::Shutdown() {
     ImGui::SFML::Shutdown();
 }
 
+namespace ImGui {
+    // Color editor for SFML color
+    static bool ColorEdit3(const char *label, sf::Color *color) {
+        float color_float_tmp[3] = {
+                static_cast<float>(color->r) / 255.f,
+                static_cast<float>(color->g) / 255.f,
+                static_cast<float>(color->b) / 255.f
+        };
+
+        bool result = ImGui::ColorEdit3(label, color_float_tmp);
+
+        if (result) {
+            color->r = static_cast<sf::Uint8>(color_float_tmp[0] * 255.f);
+            color->g = static_cast<sf::Uint8>(color_float_tmp[1] * 255.f);
+            color->b = static_cast<sf::Uint8>(color_float_tmp[2] * 255.f);
+        }
+
+        return result;
+    }
+
+    // Color editor for engine color
+    static bool ColorEdit4(const char *label, Color *color) {
+        float color_float_tmp[4] = {
+                static_cast<float>(color->r) / 255.f,
+                static_cast<float>(color->g) / 255.f,
+                static_cast<float>(color->b) / 255.f,
+                static_cast<float>(color->a) / 255.f
+        };
+
+        bool result = ImGui::ColorEdit4(label, color_float_tmp);
+
+        if (result) {
+            color->r = static_cast<sf::Uint8>(color_float_tmp[0] * 255.f);
+            color->g = static_cast<sf::Uint8>(color_float_tmp[1] * 255.f);
+            color->b = static_cast<sf::Uint8>(color_float_tmp[2] * 255.f);
+            color->a = static_cast<sf::Uint8>(color_float_tmp[3] * 255.f);
+        }
+
+        return result;
+    }
+}
+
 void Menu::Draw(DrawData *data) {
     if (!menu_active_)
         return;
 
-    ImGui::Begin("Menu");
+    static bool show_demo = false;
 
-    float background_color_tmp[3] = {
-            static_cast<float>(data->window_background_color->r) / 255.f,
-            static_cast<float>(data->window_background_color->g) / 255.f,
-            static_cast<float>(data->window_background_color->b) / 255.f
-    };
+    if (show_demo)
+        ImGui::ShowDemoWindow(&show_demo);
 
-    if (ImGui::ColorEdit3("Background color", background_color_tmp)) {
-        data->window_background_color->r = static_cast<sf::Uint8>(background_color_tmp[0] * 255.f);
-        data->window_background_color->g = static_cast<sf::Uint8>(background_color_tmp[1] * 255.f);
-        data->window_background_color->b = static_cast<sf::Uint8>(background_color_tmp[2] * 255.f);
-    }
+    ImGui::Begin("Menu", &menu_active_);
 
-    std::shared_ptr<Camera> active_camera = data->engine->GetActiveCamera();
-    if (active_camera) {
-        Vector3 camera_position = active_camera->GetPosition();
+    ImGui::Checkbox("Show demo", &show_demo);
 
-        if (ImGui::DragFloat3("Camera position", &camera_position[0], 0.01))
-            active_camera->SetPosition(camera_position);
+    ImGui::ColorEdit3("Background color", data->window_background_color);
 
-        {
-            Vector2 rotation_angles = active_camera->GetRotationAngles() * Degree(1);
-            if (ImGui::DragFloat2("Camera rotation", &rotation_angles[0], 1, -360, 360))
-                active_camera->SetRotationAngles(rotation_angles * Radians(1));
+    if (ImGui::CollapsingHeader("Cameras")) {
+        // Create camera
+        static char camera_name[64] = {};
+        if (ImGui::Button("Create camera")) {
+            camera_name[0] = '\0';
+            ImGui::OpenPopup("create_camera_popup");
         }
 
-        Vector2 rotation_angles = active_camera->GetRotationAngles();
-        ImGui::InputFloat2("Rotation angles", &rotation_angles[0], "%.8f", ImGuiInputTextFlags_ReadOnly);
-
-        Vector3 direction = active_camera->GetDirectionForward();
-        ImGui::InputFloat3("Direction", &direction[0], "%.8f", ImGuiInputTextFlags_ReadOnly);
-
-        {
-            Matrix4 rotate_around_x = matrix::RotateAroundX(rotation_angles[1]);
-            Matrix4 rotate_around_y = matrix::RotateAroundY(rotation_angles[0]);
-            Matrix4 rotation_matrix = rotate_around_x * rotate_around_y;
-
-            ImGui::Text("Matrix:");
-            ImGui::InputFloat4("##first", &rotation_matrix[0][0], "%.8f", ImGuiInputTextFlags_ReadOnly);
-            ImGui::InputFloat4("##second", &rotation_matrix[1][0], "%.8f", ImGuiInputTextFlags_ReadOnly);
-            ImGui::InputFloat4("##third", &rotation_matrix[2][0], "%.8f", ImGuiInputTextFlags_ReadOnly);
-            ImGui::InputFloat4("##forth", &rotation_matrix[3][0], "%.8f", ImGuiInputTextFlags_ReadOnly);
+        if (ImGui::BeginPopupContextItem("create_camera_popup")) {
+            ImGui::InputText("Name", camera_name, sizeof(camera_name));
+            if (ImGui::Button("Create")) {
+                auto camera = data->engine->CreateCamera();
+                data->cameras[camera_name] = CameraInfo{.camera = camera};
+            }
+            ImGui::EndPopup();
         }
 
-        {
-            Matrix4 rotate_around_x = matrix::RotateAroundX(rotation_angles[1]);
-            Matrix4 rotate_around_y = matrix::RotateAroundY(-rotation_angles[0]);
-            Matrix4 rotation_matrix = rotate_around_x * rotate_around_y;
+        auto active_camera = data->engine->GetActiveCamera();
 
-            ImGui::Text("Matrix:");
-            ImGui::InputFloat4("##2first", &rotation_matrix[0][0], "%.8f", ImGuiInputTextFlags_ReadOnly);
-            ImGui::InputFloat4("##2second", &rotation_matrix[1][0], "%.8f", ImGuiInputTextFlags_ReadOnly);
-            ImGui::InputFloat4("##2third", &rotation_matrix[2][0], "%.8f", ImGuiInputTextFlags_ReadOnly);
-            ImGui::InputFloat4("##2forth", &rotation_matrix[3][0], "%.8f", ImGuiInputTextFlags_ReadOnly);
-        }
+        for (auto it = data->cameras.begin(); it != data->cameras.end();) {
+            CameraInfo &camera_info = it->second;
+            auto camera = camera_info.camera;
 
-        {
-            Matrix4 rotate_around_x = matrix::RotateAroundX(-rotation_angles[1]);
-            Matrix4 rotate_around_y = matrix::RotateAroundY(rotation_angles[0]);
-            Matrix4 rotation_matrix = rotate_around_x * rotate_around_y;
+            const bool is_this_camera_active = camera == active_camera;
+            bool delete_camera = false;
 
-            ImGui::Text("Matrix:");
-            ImGui::InputFloat4("##3first", &rotation_matrix[0][0], "%.8f", ImGuiInputTextFlags_ReadOnly);
-            ImGui::InputFloat4("##3second", &rotation_matrix[1][0], "%.8f", ImGuiInputTextFlags_ReadOnly);
-            ImGui::InputFloat4("##3third", &rotation_matrix[2][0], "%.8f", ImGuiInputTextFlags_ReadOnly);
-            ImGui::InputFloat4("##3forth", &rotation_matrix[3][0], "%.8f", ImGuiInputTextFlags_ReadOnly);
+            if (ImGui::TreeNode(it->first.c_str())) {
+                ImGui::Text("Name: %s", it->first.c_str());
+
+                // Active
+                ImGui::Text("Is active: %s", is_this_camera_active ? "Yes" : "No");
+                if (!is_this_camera_active && ImGui::Button("Set active"))
+                    data->engine->SetActiveCamera(camera);
+
+                // Delete
+                if (data->cameras.size() > 1) {
+                    if (ImGui::Button("Delete"))
+                        delete_camera = true;
+                }
+
+                // Viewing frustum
+                ImGui::Checkbox("Show viewing frustum", &camera_info.show_viewing_frustum);
+                if (camera_info.show_viewing_frustum)
+                    ImGui::ColorEdit4("Viewing frustum color", &camera_info.viewing_frustum_color);
+
+                // FOV
+                float fov = Degree(camera->GetFieldOfView());
+                if (ImGui::DragFloat("FOV", &fov, 0.5, 1, 180))
+                    camera->SetFieldOfView(Radians(fov));
+
+                // Near Z
+                float near_z = camera->GetNearZ();
+                if (ImGui::DragFloat("Near Z", &near_z, 0.05, 0.001))
+                    camera->SetNearZ(near_z);
+
+                // Far Z
+                float far_z = camera->GetFarZ();
+                if (ImGui::DragFloat("Far Z", &far_z, 0.05, 0.001))
+                    camera->SetFarZ(far_z);
+
+                // Position
+                Vector3 camera_position = camera->GetPosition();
+                if (ImGui::DragFloat3("Position", &camera_position[0], 0.01))
+                    camera->SetPosition(camera_position);
+
+                // Rotation
+                Vector2 rotation_angles = camera->GetRotationAngles() * Degree(1);
+                if (ImGui::DragFloat2("Rotation", &rotation_angles[0], 1, -360, 360))
+                    camera->SetRotationAngles(rotation_angles * Radians(1));
+
+                // Direction forward
+                Vector3 direction = camera->GetDirectionForward();
+                ImGui::InputFloat3("Direction forward", &direction[0], "%.8f", ImGuiInputTextFlags_ReadOnly);
+
+                ImGui::TreePop();
+            }
+
+            if (delete_camera) {
+                it = data->cameras.erase(it);
+                if (is_this_camera_active)
+                    data->engine->SetActiveCamera(it->second.camera);
+            } else
+                ++it;
         }
     }
 

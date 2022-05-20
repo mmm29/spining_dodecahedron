@@ -9,6 +9,14 @@
 #include "math/matrix.h"
 #include "controller.h"
 
+// TODO: remove it
+struct CameraInfo {
+    std::shared_ptr<Camera> camera;
+
+    bool show_viewing_frustum = false;
+    Color viewing_frustum_color;
+};
+
 class Engine {
 public:
     void Initialize(const ViewPort &viewport);
@@ -18,6 +26,10 @@ public:
     draw::DrawList *GetDrawList();
 
     std::shared_ptr<Camera> GetActiveCamera() const;
+
+    void SetActiveCamera(const std::shared_ptr<Camera>& camera);
+
+    std::shared_ptr<Camera> CreateCamera();
 
     void AttachController(const std::shared_ptr<Controller> &controller);
 

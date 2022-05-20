@@ -1,4 +1,5 @@
 #include <cassert>
+#include <unordered_map>
 
 #include "engine.h"
 #include "math/graphics_utils.h"
@@ -18,6 +19,8 @@ void Engine::Initialize(const ViewPort &viewport) {
 
     screen_space_matrix_ = CreateScreenSpaceMatrix(Vector2(viewport.width, viewport.height));
 }
+
+extern std::unordered_map<std::string, CameraInfo> *cameras; // TODO: remove it
 
 void Engine::Draw() {
     draw_list_.Clear();
@@ -103,12 +106,24 @@ void Engine::Draw() {
     for (const auto &p : lines)
         draw_line(p.pos, p.pos2, p.col);
 
-    {
+    auto active_camera = GetActiveCamera();
+
+    for (const auto &p : *cameras) {
+        const CameraInfo &camera_info = p.second;
+        if (!camera_info.show_viewing_frustum)
+            continue;
+
+        auto camera = camera_info.camera;
+
+        if (camera == active_camera)
+            continue; // It's the current camera.
+
         Frustum frustum;
-        frustum.SetFromModelViewProjection(view_->GetViewData().projection_matrix);
+        frustum.SetFromModelViewProjection(camera_info.camera->ComputeViewProjectionMatrix());
 
         std::array<Vector3, Frustum::kCornersCount> corner_points = frustum.ComputeCornerPoints();
-        static const Color frustum_color = Color::Red();
+
+        const Color frustum_color = camera_info.viewing_frustum_color;
 
         draw_line(corner_points[Frustum::kNearBottomLeft], corner_points[Frustum::kNearTopLeft], frustum_color);
         draw_line(corner_points[Frustum::kNearBottomLeft], corner_points[Frustum::kNearBottomRight], frustum_color);
@@ -135,6 +150,19 @@ draw::DrawList *Engine::GetDrawList() {
 
 std::shared_ptr<Camera> Engine::GetActiveCamera() const {
     return view_->GetCamera();
+}
+
+void Engine::SetActiveCamera(const std::shared_ptr<Camera> &camera) {
+    view_->SetCamera(camera);
+}
+
+std::shared_ptr<Camera> Engine::CreateCamera() {
+    auto camera = std::make_shared<Camera>();
+    camera->Initialize(CameraInitializationParameters{
+            .aspect_ratio = view_->GetViewPort().GetAspectRatio(),
+            .world = std::weak_ptr<World>()
+    });
+    return camera;
 }
 
 void Engine::AttachController(const std::shared_ptr<Controller> &controller) {
