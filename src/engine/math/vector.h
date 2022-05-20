@@ -5,6 +5,8 @@
 #include <array>
 #include <limits>
 
+#include "math.h"
+
 template<size_t Rows, size_t Cols>
 class Matrix;
 
@@ -123,8 +125,8 @@ public:
         return *this;
     }
 
-    bool IsNormalized() const {
-        return std::abs(GetLength() - 1) <= std::numeric_limits<float>::epsilon();
+    bool IsNormalized(float epsilon = math::kSmallEpsilon) const {
+        return math::IsEqual(GetLength(), 1.f, epsilon);
     }
 
     template<size_t DesiredSize>
