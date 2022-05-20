@@ -3,6 +3,7 @@
 #include "engine.h"
 #include "math/graphics_utils.h"
 #include "math/math.h"
+#include "math/frustum.h"
 
 void Engine::Initialize(const ViewPort &viewport) {
     camera_ = std::make_shared<Camera>();
@@ -21,10 +22,11 @@ void Engine::Initialize(const ViewPort &viewport) {
 void Engine::Draw() {
     draw_list_.Clear();
 
+    view_->UpdateMatrices();
+
     const auto to_screen = [&](const Vector3 &world_pos) -> Vector2 {
         Vector4 res(world_pos[0], world_pos[1], world_pos[2], 1.f);
-//        res = view_->GetViewData().view_matrix * res;
-        res = view_->GetViewData().projection_matrix * res;
+        res = view_->GetViewData().view_projection_matrix * res;
 
         assert(res[3] > 0 && "W value must be greater than zero");
 
@@ -32,38 +34,31 @@ void Engine::Draw() {
 
         assert(math::IsInRange(res[0], -1.0f, 1.0f, math::kLargeEpsilon) && "X value is not in range [-1,1]");
         assert(math::IsInRange(res[1], -1.0f, 1.0f, math::kLargeEpsilon) && "Y value is not in range [-1,1]");
-        assert(math::IsInRange(res[2], -1.0f, 1.0f, math::kLargeEpsilon) && "Z value must be normalized");
+        assert(math::IsInRange(res[2], 0.0f, 1.0f, math::kLargeEpsilon) && "Z value must be normalized");
 
         res = screen_space_matrix_ * res;
-
 
         return Vector2(res[0], res[1]);
     };
 
     const auto draw_line = [&](Vector3 from, Vector3 to, const Color &color) {
-        Vector4 from4(from[0], from[1], from[2], 1.f);
-        from4 = view_->GetViewData().view_matrix * from4;
-        Vector4 to4(to[0], to[1], to[2], 1.f);
-        to4 = view_->GetViewData().view_matrix * to4;
+        Frustum frustum;
+        frustum.SetFromModelViewProjection(view_->GetViewData().view_projection_matrix);
+        frustum.Invert();
 
-        from = {from4[0], from4[1], from4[2]};
-        to = {to4[0], to4[1], to4[2]};
-
-        for (const Plane &clipping_plane : camera_->clipping_planes_) {
+        for (const Plane &clipping_plane : frustum.planes_) {
             Plane::Intersection intersection = clipping_plane.IntersectLine(from, to);
             if (intersection.Exists()) {
                 if (clipping_plane.IsOutside(from))
                     from = intersection.point;
                 else
                     to = intersection.point;
-            } else if (clipping_plane.IsOutside(from))
+            } else if (!intersection.orthogonal && clipping_plane.IsOutside(from))
                 return; // Both points outside the plane and the frustum. Skip.
         }
 
         draw_list_.AddLine(to_screen(from), to_screen(to), color);
     };
-
-    view_->UpdateMatrices();
 
     {
         static const Vector2 net_corners[2] = {
@@ -107,6 +102,31 @@ void Engine::Draw() {
 
     for (const auto &p : lines)
         draw_line(p.pos, p.pos2, p.col);
+
+    {
+        Frustum frustum;
+        frustum.SetFromModelViewProjection(view_->GetViewData().projection_matrix);
+
+        std::array<Vector3, Frustum::kCornersCount> corner_points = frustum.ComputeCornerPoints();
+        static const Color frustum_color = Color::Red();
+
+        draw_line(corner_points[Frustum::kNearBottomLeft], corner_points[Frustum::kNearTopLeft], frustum_color);
+        draw_line(corner_points[Frustum::kNearBottomLeft], corner_points[Frustum::kNearBottomRight], frustum_color);
+        draw_line(corner_points[Frustum::kNearBottomLeft], corner_points[Frustum::kFarBottomLeft], frustum_color);
+
+        draw_line(corner_points[Frustum::kNearTopRight], corner_points[Frustum::kNearTopLeft], frustum_color);
+        draw_line(corner_points[Frustum::kNearTopRight], corner_points[Frustum::kNearBottomRight], frustum_color);
+        draw_line(corner_points[Frustum::kNearTopRight], corner_points[Frustum::kFarTopRight], frustum_color);
+
+        draw_line(corner_points[Frustum::kFarBottomRight], corner_points[Frustum::kNearBottomRight], frustum_color);
+        draw_line(corner_points[Frustum::kFarBottomRight], corner_points[Frustum::kFarTopRight], frustum_color);
+        draw_line(corner_points[Frustum::kFarBottomRight], corner_points[Frustum::kFarBottomLeft], frustum_color);
+
+        draw_line(corner_points[Frustum::kFarTopLeft], corner_points[Frustum::kNearTopLeft], frustum_color);
+        draw_line(corner_points[Frustum::kFarTopLeft], corner_points[Frustum::kFarTopRight], frustum_color);
+        draw_line(corner_points[Frustum::kFarTopLeft], corner_points[Frustum::kFarBottomLeft], frustum_color);
+
+    }
 }
 
 draw::DrawList *Engine::GetDrawList() {

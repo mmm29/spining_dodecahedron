@@ -4,9 +4,15 @@
 
 class Plane {
 public:
+    Plane();
+
     Plane(const Vector3 &normal, const Vector3 &point);
 
     Plane(const Vector3 &normal, float distance);
+
+    void SetNormal(const Vector3 &normal);
+
+    void SetDistance(float distance);
 
     const Vector3 &GetNormal() const;
 
@@ -37,11 +43,21 @@ public:
 
     Intersection IntersectRay(const Vector3 &start, const Vector3 &direction) const;
 
-    bool IsInside(const Vector3& point) const;
+    bool IsInside(const Vector3 &point) const;
 
-    bool IsOutside(const Vector3& point) const;
+    bool IsOutside(const Vector3 &point) const;
+
+    void Flip();
+
+    struct PlanesIntersectionPoint {
+        bool exists;
+
+        Vector3 point;
+    };
+
+    static PlanesIntersectionPoint Intersect(const Plane &p1, const Plane &p2, const Plane &p3);
 
 private:
-    const Vector3 normal_;
-    const float distance_;
+    Vector3 normal_;
+    float distance_;
 };

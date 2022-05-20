@@ -29,8 +29,8 @@ void View::UpdateMatrices() {
     if (!IsCameraAttached())
         return;
 
-    data_.view_matrix = camera_->GetViewMatrix();
-    data_.projection_matrix = camera_->GetProjectionMatrix();
+    data_.view_matrix = camera_->ComputeViewMatrix();
+    data_.projection_matrix = camera_->ComputeProjectionMatrix();
     data_.view_projection_matrix = data_.projection_matrix * data_.view_matrix;
 }
 

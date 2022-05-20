@@ -24,12 +24,12 @@ public:
     float GetFieldOfView() const;
 
 public:
-    Matrix4 GetViewMatrix() const;
+    Matrix4 ComputeViewMatrix() const;
 
-    Matrix4 GetProjectionMatrix() const;
+    Matrix4 ComputeProjectionMatrix() const;
 
 private:
-    void UpdateClippingPlanes();
+    void ResetCachedMatrices();
 
 private:
     float fov_ = Radians(55);
@@ -40,9 +40,11 @@ private:
 
     float aspect_ratio_;
 
-public:// TODO: remove
-    std::vector<Plane> clipping_planes_;
-
 private:
     std::weak_ptr<World> world_;
+
+private:
+    // Cached matrices
+    mutable bool is_projection_matrix_cached_ = false;
+    mutable Matrix4 cached_projection_matrix_;
 };
