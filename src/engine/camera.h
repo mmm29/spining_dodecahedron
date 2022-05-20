@@ -34,7 +34,7 @@ private:
 private:
     float fov_ = Radians(60);
 
-    float near_z = 0.01f;
+    float near_z = 0.1f;
 
     float far_z = 100.f;
 
