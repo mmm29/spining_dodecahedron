@@ -6,12 +6,8 @@
 
 // https://github.com/ezEngine/ezEngine/blob/dev/Code/Engine/Foundation/Math/Implementation/Frustum.cpp
 // Gribb & Hartmann method - http://www.cs.otago.ac.nz/postgrads/alexis/planeExtraction.pdf
-void Frustum::SetFromModelViewProjection(const Matrix4 &model_view_projection0) {
+void Frustum::SetFromModelViewProjection(const Matrix4 &model_view_projection) {
     Vector4 planes[6];
-
-    Matrix4 model_view_projection = model_view_projection0;
-    for (size_t i = 0; i < 4; i++)
-        model_view_projection[2][i] += model_view_projection[2][i] - model_view_projection[3][i];
 
     if (kHandedness == Handedness::kLeftHanded) {
         planes[kLeftPlane] = -model_view_projection.GetRow<4>(3) + model_view_projection.GetRow<4>(0);
@@ -23,8 +19,13 @@ void Frustum::SetFromModelViewProjection(const Matrix4 &model_view_projection0) 
 
     planes[kTopPlane] = -model_view_projection.GetRow<4>(3) + model_view_projection.GetRow<4>(1);
     planes[kBottomPlane] = -model_view_projection.GetRow<4>(3) - model_view_projection.GetRow<4>(1);
-    planes[kNearPlane] = -model_view_projection.GetRow<4>(3) - model_view_projection.GetRow<4>(2);
-    planes[kFarPlane] = -model_view_projection.GetRow<4>(3) + model_view_projection.GetRow<4>(2);
+
+    // For minus one to one perspective projection matrix
+//    planes[kNearPlane] = -model_view_projection.GetRow<4>(3) - model_view_projection.GetRow<4>(2);
+//    planes[kFarPlane] = -model_view_projection.GetRow<4>(3) + model_view_projection.GetRow<4>(2);
+
+    planes[kNearPlane] = -model_view_projection.GetRow<4>(2) * 2;
+    planes[kFarPlane] = (-model_view_projection.GetRow<4>(3) + model_view_projection.GetRow<4>(2)) * 2;
 
     // Normalize planes
     for (size_t plane_idx = 0; plane_idx < kPlanesCount; plane_idx++) {
