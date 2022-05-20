@@ -32,7 +32,7 @@ private:
     void ResetCachedMatrices();
 
 private:
-    float fov_ = Radians(55);
+    float fov_ = Radians(60);
 
     float near_z = 0.01f;
 
