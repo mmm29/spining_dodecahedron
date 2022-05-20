@@ -53,7 +53,7 @@ void Engine::Draw() {
                     from = intersection.point;
                 else
                     to = intersection.point;
-            } else if (!intersection.orthogonal && clipping_plane.IsOutside(from))
+            } else if (clipping_plane.IsOutside(from))
                 return; // Both points outside the plane and the frustum. Skip.
         }
 
