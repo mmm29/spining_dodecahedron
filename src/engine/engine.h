@@ -5,9 +5,9 @@
 
 #include "camera.h"
 #include "view.h"
-#include "draw_list.h"
 #include "math/matrix.h"
 #include "controller.h"
+#include "render/renderer.h"
 
 // TODO: remove it
 struct CameraInfo {
@@ -19,15 +19,13 @@ struct CameraInfo {
 
 class Engine {
 public:
-    void Initialize(const ViewPort &viewport);
+    void Initialize(const ViewPort &viewport, std::shared_ptr<render::Renderer> &renderer);
 
     void Draw();
 
-    draw::DrawList *GetDrawList();
-
     std::shared_ptr<Camera> GetActiveCamera() const;
 
-    void SetActiveCamera(const std::shared_ptr<Camera>& camera);
+    void SetActiveCamera(const std::shared_ptr<Camera> &camera);
 
     std::shared_ptr<Camera> CreateCamera();
 
@@ -39,12 +37,10 @@ private:
     Matrix4 screen_space_matrix_;
 
 private:
-    // 3D projection
+    std::shared_ptr<render::Renderer> renderer_;
+
     std::unique_ptr<View> view_;
 
 private:
-    // Drawing
-    draw::DrawList draw_list_;
-
     std::list<std::shared_ptr<Controller>> controllers_;
 };

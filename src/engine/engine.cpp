@@ -3,10 +3,12 @@
 
 #include "engine.h"
 #include "math/graphics_utils.h"
-#include "math/math.h"
 #include "math/frustum.h"
+#include "render/renderer_2d.h"
 
-void Engine::Initialize(const ViewPort &viewport) {
+void Engine::Initialize(const ViewPort &viewport, std::shared_ptr<render::Renderer> &renderer) {
+    renderer_ = renderer;
+
     auto camera = std::make_shared<Camera>();
     camera->Initialize(CameraInitializationParameters{
             .aspect_ratio = viewport.GetAspectRatio(),
@@ -23,9 +25,13 @@ void Engine::Initialize(const ViewPort &viewport) {
 extern std::unordered_map<std::string, CameraInfo> *cameras; // TODO: remove it
 
 void Engine::Draw() {
-    draw_list_.Clear();
-
     view_->UpdateMatrices();
+
+    render::Renderer2D renderer(renderer_.get());
+
+    Frustum frustum;
+    frustum.SetFromModelViewProjection(view_->GetViewData().view_projection_matrix);
+    frustum.Invert();
 
     const auto to_screen = [&](const Vector3 &world_pos) -> Vector2 {
         Vector4 res(world_pos[0], world_pos[1], world_pos[2], 1.f);
@@ -45,10 +51,6 @@ void Engine::Draw() {
     };
 
     const auto draw_line = [&](Vector3 from, Vector3 to, const Color &color) {
-        Frustum frustum;
-        frustum.SetFromModelViewProjection(view_->GetViewData().view_projection_matrix);
-        frustum.Invert();
-
         for (const Plane &clipping_plane : frustum.planes_) {
             Plane::Intersection intersection = clipping_plane.IntersectLine(from, to);
             if (intersection.Exists()) {
@@ -60,7 +62,7 @@ void Engine::Draw() {
                 return; // Both points outside the plane and the frustum. Skip.
         }
 
-        draw_list_.AddLine(to_screen(from), to_screen(to), color);
+        renderer.DrawLine(to_screen(from), to_screen(to), color);
     };
 
     {
@@ -142,10 +144,6 @@ void Engine::Draw() {
         draw_line(corner_points[Frustum::kFarTopLeft], corner_points[Frustum::kFarBottomLeft], frustum_color);
 
     }
-}
-
-draw::DrawList *Engine::GetDrawList() {
-    return &draw_list_;
 }
 
 std::shared_ptr<Camera> Engine::GetActiveCamera() const {
