@@ -1,11 +1,14 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
 #include "mesh.h"
 
 class ObjParser {
 public:
+    static std::shared_ptr<Mesh> Parse(const std::string &text);
+
     static std::shared_ptr<Mesh> Parse(const char *text, size_t length);
 
     void SetText(const char *text, size_t length);

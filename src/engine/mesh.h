@@ -23,6 +23,10 @@ public:
 
     void Transform(const Matrix4& transform);
 
+    const std::vector<Vertex>& GetVertices() const;
+
+    const std::vector<Face>& GetFaces() const;
+
 protected:
     std::vector<Vertex> vertices_;
     std::vector<Face> faces_;

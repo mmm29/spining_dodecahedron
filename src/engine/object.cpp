@@ -37,10 +37,14 @@ Vector3 Object::GetDirectionForward() const {
     return direction_;
 }
 
+Matrix4 Object::GetModelMatrix() const {
+    return rotation_matrix_ * matrix::Translate(position_);
+}
+
 void Object::UpdateTransformationMatrix() {
     Matrix4 rotate_around_x = matrix::RotateAroundX(rotation_angles_[1]);
     Matrix4 rotate_around_y = matrix::RotateAroundY(-rotation_angles_[0]);
-    transformation_matrix_ = rotate_around_x * rotate_around_y;
+    rotation_matrix_ = rotate_around_x * rotate_around_y;
 
-    direction_ = transformation_matrix_.GetRow<3>(2);
+    direction_ = rotation_matrix_.GetRow<3>(2);
 }

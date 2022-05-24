@@ -17,6 +17,8 @@ public:
 
     Vector3 GetDirectionForward() const;
 
+    Matrix4 GetModelMatrix() const;
+
 private:
     void UpdateTransformationMatrix();
 
@@ -25,7 +27,7 @@ protected:
 
     Vector2 rotation_angles_;
 
-    Matrix4 transformation_matrix_;
+    Matrix4 rotation_matrix_;
 
     Vector3 direction_;
 };

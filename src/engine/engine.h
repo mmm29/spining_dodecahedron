@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 
+#include "world.h"
 #include "camera.h"
 #include "view.h"
 #include "math/matrix.h"
@@ -33,10 +34,14 @@ public:
 
     void Update(float ts);
 
+    std::shared_ptr<World> GetWorld() const;
+
 private:
     Matrix4 screen_space_matrix_;
 
 private:
+    std::shared_ptr<World> world_;
+
     std::shared_ptr<render::Renderer> renderer_;
 
     std::unique_ptr<View> view_;

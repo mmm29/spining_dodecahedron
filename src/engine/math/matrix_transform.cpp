@@ -53,3 +53,12 @@ Matrix4 matrix::Scale(const Vector3 &scale) {
             {0,        0,        0,        1}
     };
 }
+
+Matrix4 matrix::Scale(float scale) {
+    return Matrix4{
+            {scale, 0,     0,     0},
+            {0,     scale, 0,     0},
+            {0,     0,     scale, 0},
+            {0,     0,     0,     1}
+    };
+}

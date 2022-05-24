@@ -4,11 +4,11 @@ World::World() {
     world_matrix_.SetIdentity();
 }
 
-void World::AddObject(const std::shared_ptr<Object> &object) {
+void World::AddObject(const std::shared_ptr<RigidBody> &object) {
     objects_.emplace_back(object);
 }
 
-const std::vector<std::shared_ptr<Object>> &World::ListObjects() const {
+const std::list<std::shared_ptr<RigidBody>> &World::ListObjects() const {
     return objects_;
 }
 

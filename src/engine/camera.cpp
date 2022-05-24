@@ -43,9 +43,9 @@ void Camera::SetFarZ(float far_z) {
 }
 
 Matrix4 Camera::ComputeViewMatrix() const {
-    return CreateViewMatrix(position_, transformation_matrix_.GetRow<3>(0),
-                            transformation_matrix_.GetRow<3>(1),
-                            transformation_matrix_.GetRow<3>(2));
+    return CreateViewMatrix(position_, rotation_matrix_.GetRow<3>(0),
+                            rotation_matrix_.GetRow<3>(1),
+                            rotation_matrix_.GetRow<3>(2));
 }
 
 Matrix4 Camera::ComputeProjectionMatrix() const {

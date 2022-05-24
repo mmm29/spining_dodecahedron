@@ -12,3 +12,11 @@ void Mesh::Transform(const Matrix4 &transform) {
     for (Vertex &vertex : vertices_)
         vertex.position = (transform * vertex.position.AsVec4()).AsVec3();
 }
+
+const std::vector<Mesh::Vertex> &Mesh::GetVertices() const {
+    return vertices_;
+}
+
+const std::vector<Mesh::Face> &Mesh::GetFaces() const {
+    return faces_;
+}

@@ -9,10 +9,12 @@
 void Engine::Initialize(const ViewPort &viewport, std::shared_ptr<render::Renderer> &renderer) {
     renderer_ = renderer;
 
+    world_ = std::make_shared<World>();
+
     auto camera = std::make_shared<Camera>();
     camera->Initialize(CameraInitializationParameters{
             .aspect_ratio = viewport.GetAspectRatio(),
-            .world = std::weak_ptr<World>()
+            .world = world_
     });
 
     view_ = std::make_unique<View>();
@@ -63,6 +65,119 @@ void Engine::Draw() {
 
         renderer.DrawLine(to_screen(from), to_screen(to), color);
     };
+
+    auto draw_triangle = [&](const Vector3 &p1, const Vector3 &p2, const Vector3 &p3, const Color &color0) {
+        Vector3 triangle_normal = (p2 - p1).Cross(p3 - p1);
+        triangle_normal.Normalize();
+
+        const Vector3 triangle_center = (p1 + p2 + p3) / 3;
+        Vector3 direction_to_triangle = triangle_center - view_->GetCamera()->GetPosition();
+        direction_to_triangle.Normalize(); // TODO: Is it necessary?
+
+        const float triangle_dot = triangle_normal.Dot(direction_to_triangle);
+        if (triangle_dot > 0)
+            return;
+
+        Color color(static_cast<uint8_t>(static_cast<float>(color0.r) * (0.3f * std::abs(triangle_dot) + 0.7f)),
+                    static_cast<uint8_t>(static_cast<float>(color0.g) * (0.3f * std::abs(triangle_dot) + 0.7f)),
+                    static_cast<uint8_t>(static_cast<float>(color0.b) * (0.3f * std::abs(triangle_dot) + 0.7f)),
+                    color0.a);
+
+        std::list<std::array<Vector3, 3>> triangles;
+        triangles.emplace_back(std::array<Vector3, 3>{p1, p2, p3});
+
+        for (const Plane &clipping_plane : frustum.planes_) {
+            for (auto it = triangles.begin(); it != triangles.end();) {
+                std::array<Vector3, 3> &triangle_points = *it;
+
+                std::vector<Vector3> inside_points;
+                std::vector<Vector3> outside_points;
+
+                for (const Vector3 &point : triangle_points) {
+                    if (clipping_plane.IsOutside(point))
+                        outside_points.push_back(point);
+                    else
+                        inside_points.push_back(point);
+                }
+
+                assert(inside_points.size() + outside_points.size() == 3);
+
+                if (inside_points.empty()) {
+                    it = triangles.erase(it);
+                    continue;
+                }
+
+                if (outside_points.empty()) {
+                    ++it;
+                    continue;
+                }
+
+                if (inside_points.size() == 1) {
+                    Plane::Intersection intersection1 = clipping_plane.IntersectLine(inside_points[0],
+                                                                                     outside_points[0]);
+                    Plane::Intersection intersection2 = clipping_plane.IntersectLine(inside_points[0],
+                                                                                     outside_points[1]);
+
+                    assert(intersection1.Exists());
+                    assert(intersection2.Exists());
+
+                    triangle_points = {inside_points[0], intersection1.Point(), intersection2.Point()};
+                } else {
+                    assert(inside_points.size() == 2);
+
+                    Plane::Intersection intersection1 = clipping_plane.IntersectLine(inside_points[0],
+                                                                                     outside_points[0]);
+                    Plane::Intersection intersection2 = clipping_plane.IntersectLine(inside_points[1],
+                                                                                     outside_points[0]);
+                    assert(intersection1.Exists());
+                    assert(intersection2.Exists());
+
+                    triangle_points = {inside_points[0], intersection1.Point(), inside_points[1]};
+                    triangles.emplace(it, std::array<Vector3, 3>{intersection1.Point(),
+                                                                 intersection2.Point(), inside_points[1]});
+                }
+                ++it;
+            }
+        }
+
+        for (const auto &triangle : triangles) {
+            std::array<Vector2, 3> screen_pos = {to_screen(triangle[0]),
+                                                 to_screen(triangle[1]),
+                                                 to_screen(triangle[2])};
+
+            renderer.DrawTriangle(to_screen(triangle[0]),
+                                  to_screen(triangle[1]),
+                                  to_screen(triangle[2]),
+                                  color);
+
+            renderer.DrawLine(screen_pos[0], screen_pos[1], Color::Blue());
+            renderer.DrawLine(screen_pos[0], screen_pos[2], Color::Blue());
+            renderer.DrawLine(screen_pos[1], screen_pos[2], Color::Blue());
+        }
+    };
+
+    {
+        auto bodies = world_->ListObjects();
+
+        for (const auto &rigid_body : bodies) {
+            const Matrix4 model_matrix = rigid_body->GetModelMatrix();
+            const auto &mesh = rigid_body->GetMesh();
+
+            const std::vector<Mesh::Vertex> &vertices = mesh->GetVertices();
+            const std::vector<Mesh::Face> &faces = mesh->GetFaces();
+
+            for (const Mesh::Face &face : faces) {
+                std::array<Vector3, 3> position;
+
+                for (uint32_t i = 0; i < 3; i++)
+                    position[i] = (model_matrix * vertices[face.indices[i]].position.AsVec4()).AsVec3();
+
+                draw_triangle(position[0], position[1], position[2], Color(0xFF, 0xD3, 0xC9, 0xFF));
+            }
+        }
+    }
+
+    draw_triangle(Vector3(-5, -5, -5), Vector3(-0, 0, 0), Vector3(-5, -5, 5), Color::Red());
 
     {
         static const Vector2 net_corners[2] = {
@@ -170,4 +285,8 @@ void Engine::AttachController(const std::shared_ptr<Controller> &controller) {
 void Engine::Update(float ts) {
     for (const std::shared_ptr<Controller> &controller : controllers_)
         controller->Update(ts);
+}
+
+std::shared_ptr<World> Engine::GetWorld() const {
+    return world_;
 }

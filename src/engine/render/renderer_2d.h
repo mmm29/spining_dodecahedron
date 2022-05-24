@@ -10,6 +10,8 @@ namespace render {
 
         void DrawLine(const Vector2 &p1, const Vector2 &p2, const Color &color);
 
+        void DrawTriangle(const Vector2 &p1, const Vector2 &p2, const Vector2 &p3, const Color &color);
+
     private:
         Renderer *renderer_;
     };

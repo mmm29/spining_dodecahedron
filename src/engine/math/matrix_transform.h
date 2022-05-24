@@ -15,4 +15,6 @@ namespace matrix {
 
     Matrix4 Scale(const Vector3 &scale);
 
+    Matrix4 Scale(float scale);
+
 }

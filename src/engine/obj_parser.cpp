@@ -1,5 +1,9 @@
 #include "obj_parser.h"
 
+std::shared_ptr<Mesh> ObjParser::Parse(const std::string &text) {
+    return Parse(text.c_str(), text.size());
+}
+
 std::shared_ptr<Mesh> ObjParser::Parse(const char *text, size_t length) {
     ObjParser parser;
     parser.SetText(text, length);

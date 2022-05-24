@@ -1,3 +1,6 @@
+#include <fstream>
+#include <cassert>
+
 #include <SFML/Graphics.hpp>
 
 #include "engine/engine.h"
@@ -6,6 +9,10 @@
 
 #include "camera_controller.h"
 #include "menu.h"
+
+#include "engine/math/matrix_transform.h"
+#include "engine/obj_parser.h"
+#include "engine/rigid_body.h"
 
 static sf::Vector2i GetCenterPosition(sf::RenderWindow &window) {
     return sf::Vector2i(static_cast<int>(window.getSize().x / 2), static_cast<int>(window.getSize().y / 2));
@@ -20,6 +27,23 @@ static sf::Vector2i GetMouseMovement(sf::RenderWindow &window) {
 }
 
 std::unordered_map<std::string, CameraInfo> *cameras; // TODO: remove it
+
+std::string ReadFile(const char *filepath) {
+    std::ifstream file(filepath, std::ios::in | std::ios::ate);
+
+    if (!file.is_open())
+        return std::string();
+
+    std::streamsize file_size = file.tellg();
+    file.seekg(0);
+
+    std::string data(file_size, '\0');
+    file.read(&data[0], file_size);
+
+    file.close();
+
+    return data;
+}
 
 int main() {
     sf::ContextSettings settings;
@@ -63,6 +87,22 @@ int main() {
             .camera = engine.GetActiveCamera()
     };
     cameras = &menu_data.cameras; // TODO: remove it
+
+    {
+        auto cube_obj_text = ReadFile("obj/monkey.obj");
+        assert(!cube_obj_text.empty());
+
+        auto cube_mesh = ObjParser::Parse(cube_obj_text);
+        assert(cube_mesh);
+
+        cube_mesh->Transform(matrix::Scale(2.f));
+
+        auto cube = std::make_shared<RigidBody>();
+        cube->SetMesh(cube_mesh);
+        cube->SetPosition(Vector3(10, 10, 10));
+
+        engine.GetWorld()->AddObject(cube);
+    }
 
     sf::Clock delta_clock;
 
