@@ -1,6 +1,6 @@
 #pragma once
 
-#include <list>
+#include <vector>
 #include <memory>
 
 #include "object.h"
@@ -12,12 +12,12 @@ public:
 
     void AddObject(const std::shared_ptr<Object> &object);
 
-    const std::list<std::shared_ptr<Object>> &ListObjects() const;
+    const std::vector<std::shared_ptr<Object>> &ListObjects() const;
 
     Matrix4 GetWorldMatrix() const;
 
 private:
     Matrix4 world_matrix_;
 
-    std::list<std::shared_ptr<Object>> objects_;
+    std::vector<std::shared_ptr<Object>> objects_;
 };
