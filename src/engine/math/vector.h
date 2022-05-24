@@ -3,104 +3,76 @@
 #include <cstdint>
 #include <cmath>
 #include <array>
-#include <limits>
 
 #include "math.h"
 
-template<size_t Rows, size_t Cols>
-class Matrix;
-
 template<size_t Size>
-class Vector {
+struct Vector;
+
+template<>
+struct Vector<2> {
 public:
-    Vector() : values_({}) {}
+    Vector() : values{} {}
 
-    Vector(std::initializer_list<float> il) : Vector(il, std::make_index_sequence<Size>()) {}
+    Vector(std::initializer_list<float> il) : values{il.begin()[0], il.begin()[1]} {}
 
-    template<class... Args>
-    explicit Vector(Args... values) : values_({static_cast<float>(values)...}) {}
-
-private:
-    template<size_t... Is>
-    Vector(std::initializer_list<float> il, std::index_sequence<Is...>) : values_{il.begin()[Is]...} {}
+    Vector(float x, float y) : x(x), y(y) {}
 
 public:
     float &operator[](ptrdiff_t index) {
-        return values_[index];
+        return values[index];
     }
 
     const float &operator[](ptrdiff_t index) const {
-        return values_[index];
+        return values[index];
     }
 
-    Matrix<Size, 1> AsMatrix() const {
-        Matrix<Size, 1> result;
-
-        for (size_t i = 0; i < Size; i++)
-            result[i][0] = values_[i];
-
-        return result;
-    }
-
-    Vector<Size> &operator*=(float scalar) {
-        for (float &v : values_)
-            v *= scalar;
+    Vector<2> &operator*=(float scalar) {
+        x *= scalar;
+        y *= scalar;
 
         return *this;
     }
 
-    Vector<Size> &operator/=(float scalar) {
-        for (float &v : values_)
-            v /= scalar;
+    Vector<2> &operator/=(float scalar) {
+        x /= scalar;
+        y /= scalar;
 
         return *this;
     }
 
-    Vector<Size> operator*(float scalar) const {
-        Vector<Size> result = *this;
-        result *= scalar;
-        return result;
+    Vector<2> operator*(float scalar) const {
+        return Vector<2>(x * scalar, y * scalar);
     }
 
-    Vector<Size> operator/(float scalar) const {
-        Vector<Size> result = *this;
-        result /= scalar;
-        return result;
+    Vector<2> operator/(float scalar) const {
+        return Vector<2>(x / scalar, y / scalar);
     }
 
-    Vector<Size> &operator+=(const Vector<Size> &other) {
-        for (size_t i = 0; i < Size; i++)
-            values_[i] += other.values_[i];
+    Vector<2> &operator+=(const Vector<2> &rhs) {
+        x += rhs.x;
+        y += rhs.y;
 
         return *this;
     }
 
-    Vector<Size> &operator-=(const Vector<Size> &other) {
-        for (size_t i = 0; i < Size; i++)
-            values_[i] -= other.values_[i];
+    Vector<2> &operator-=(const Vector<2> &rhs) {
+        x -= rhs.x;
+        y -= rhs.y;
 
         return *this;
     }
 
-    Vector<Size> operator+(const Vector<Size> &other) const {
-        Vector<Size> result = *this;
-        result += other;
-        return result;
+    Vector<2> operator+(const Vector<2> &rhs) const {
+        return Vector<2>(x + rhs.x, y + rhs.y);
     }
 
-    Vector<Size> operator-(const Vector<Size> &other) const {
-        Vector<Size> result = *this;
-        result -= other;
-        return result;
+    Vector<2> operator-(const Vector<2> &rhs) const {
+        return Vector<2>(x - rhs.x, y - rhs.y);
     }
 
-    Vector<Size> operator-() const {
-        Vector<Size> result = *this;
-
-        for (float &v : result.values_)
-            v = -v;
-
-        return result;
+    Vector<2> operator-() const {
+        return Vector<2>(-x, -y);
     }
 
     float GetLength() const {
@@ -108,19 +80,14 @@ public:
     }
 
     float GetLengthSquared() const {
-        float length = 0;
-
-        for (const float &v : values_)
-            length += v * v;
-
-        return length;
+        return x * x + y * y;
     }
 
-    Vector<Size> &Normalize() {
+    Vector<2> &Normalize() {
         const float length = GetLength();
 
-        for (float &v : values_)
-            v /= length;
+        x /= length;
+        y /= length;
 
         return *this;
     }
@@ -129,55 +96,277 @@ public:
         return math::IsEqual(GetLength(), 1.f, epsilon);
     }
 
-    template<size_t DesiredSize>
-    Vector<DesiredSize> AsVector() const {
-        static_assert(DesiredSize >= Size);
-
-        Vector<DesiredSize> result;
-
-        for (size_t i = 0; i < Size; i++)
-            result[i] = values_[i];
-
-        return result;
+    float Dot(const Vector<2> &rhs) const {
+        return x * rhs.x + y * rhs.y;
     }
 
-    float Dot(const Vector<Size> &rhs) const {
-        float res = 0;
-
-        for (size_t i = 0; i < Size; i++)
-            res += values_[i] * rhs.values_[i];
-
-        return res;
-    }
-
-    Vector<3> Cross(const Vector<3> &rhs) const {
-        static_assert(Size == 3);
-
-        return Vector<3>(values_[1] * rhs.values_[2] - values_[2] * rhs.values_[1],
-                         values_[2] * rhs.values_[0] - values_[0] * rhs.values_[2],
-                         values_[0] * rhs.values_[1] - values_[1] * rhs.values_[0]);
-    }
-
-    Vector<Size> operator*(const Vector<Size> &rhs) const {
-        Vector<Size> result;
-
-        for (size_t i = 0; i < Size; i++)
-            result[i] = values_[i] * rhs[i];
-
-        return result;
+    Vector<2> operator*(const Vector<2> &rhs) const {
+        return Vector<2>(x * rhs.x, y * rhs.y);
     }
 
     bool IsZero() const {
-        for (const float &v : values_) {
-            if (v != 0.f)
-                return false;
-        }
-
-        return true;
+        return math::IsZero(x) && math::IsZero(y);
     }
 
-private:
-    std::array<float, Size> values_;
+    Vector<3> AsVec3(float z = 1.0f) const;
+
+    Vector<4> AsVec4(float z = 1.0f, float w = 1.0f) const;
+
+public:
+    union {
+        struct {
+            float x, y;
+        };
+
+        std::array<float, 2> values;
+    };
+};
+
+template<>
+struct Vector<3> {
+public:
+    Vector() : values{} {}
+
+    Vector(std::initializer_list<float> il) : values{il.begin()[0], il.begin()[1], il.begin()[2]} {}
+
+    Vector(float x, float y, float z) : x(x), y(y), z(z) {}
+
+public:
+    float &operator[](ptrdiff_t index) {
+        return values[index];
+    }
+
+    const float &operator[](ptrdiff_t index) const {
+        return values[index];
+    }
+
+    Vector<3> &operator*=(float scalar) {
+        x *= scalar;
+        y *= scalar;
+        z *= scalar;
+
+        return *this;
+    }
+
+    Vector<3> &operator/=(float scalar) {
+        x /= scalar;
+        y /= scalar;
+        z /= scalar;
+
+        return *this;
+    }
+
+    Vector<3> operator*(float scalar) const {
+        return Vector<3>(x * scalar, y * scalar, z * scalar);
+    }
+
+    Vector<3> operator/(float scalar) const {
+        return Vector<3>(x / scalar, y / scalar, z / scalar);
+    }
+
+    Vector<3> &operator+=(const Vector<3> &rhs) {
+        x += rhs.x;
+        y += rhs.y;
+        z += rhs.z;
+
+        return *this;
+    }
+
+    Vector<3> &operator-=(const Vector<3> &rhs) {
+        x -= rhs.x;
+        y -= rhs.y;
+        z -= rhs.z;
+
+        return *this;
+    }
+
+    Vector<3> operator+(const Vector<3> &rhs) const {
+        return Vector<3>(x + rhs.x, y + rhs.y, z + rhs.z);
+    }
+
+    Vector<3> operator-(const Vector<3> &rhs) const {
+        return Vector<3>(x - rhs.x, y - rhs.y, z - rhs.z);
+    }
+
+    Vector<3> operator-() const {
+        return Vector<3>(-x, -y, -z);
+    }
+
+    float GetLength() const {
+        return sqrtf(GetLengthSquared());
+    }
+
+    float GetLengthSquared() const {
+        return x * x + y * y + z * z;
+    }
+
+    Vector<3> &Normalize() {
+        const float length = GetLength();
+
+        x /= length;
+        y /= length;
+        z /= length;
+
+        return *this;
+    }
+
+    bool IsNormalized(float epsilon = math::kSmallEpsilon) const {
+        return math::IsEqual(GetLength(), 1.f, epsilon);
+    }
+
+    float Dot(const Vector<3> &rhs) const {
+        return x * rhs.x + y * rhs.y + z * rhs.z;
+    }
+
+    Vector<3> Cross(const Vector<3> &rhs) const {
+        return Vector<3>(y * rhs.z - z * rhs.y,
+                         z * rhs.x - x * rhs.z,
+                         x * rhs.y - y * rhs.x);
+    }
+
+    Vector<3> operator*(const Vector<3> &rhs) const {
+        return Vector<3>(x * rhs.x, y * rhs.y, z * rhs.z);
+    }
+
+    bool IsZero() const {
+        return math::IsZero(x) && math::IsZero(y) && math::IsZero(z);
+    }
+
+    Vector<2> AsVec2() const;
+
+    Vector<4> AsVec4(float w = 1.0f) const;
+
+public:
+    union {
+        struct {
+            float x, y, z;
+        };
+
+        std::array<float, 3> values;
+    };
+};
+
+template<>
+struct Vector<4> {
+public:
+    Vector() : values{} {}
+
+    Vector(std::initializer_list<float> il) : values{il.begin()[0], il.begin()[1], il.begin()[2], il.begin()[3]} {}
+
+    Vector(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
+
+public:
+    float &operator[](ptrdiff_t index) {
+        return values[index];
+    }
+
+    const float &operator[](ptrdiff_t index) const {
+        return values[index];
+    }
+
+    Vector<4> &operator*=(float scalar) {
+        x *= scalar;
+        y *= scalar;
+        z *= scalar;
+        w *= scalar;
+
+        return *this;
+    }
+
+    Vector<4> &operator/=(float scalar) {
+        x /= scalar;
+        y /= scalar;
+        z /= scalar;
+        w /= scalar;
+
+        return *this;
+    }
+
+    Vector<4> operator*(float scalar) const {
+        return Vector<4>(x * scalar, y * scalar, z * scalar, w * scalar);
+    }
+
+    Vector<4> operator/(float scalar) const {
+        return Vector<4>(x / scalar, y / scalar, z / scalar, w / scalar);
+    }
+
+    Vector<4> &operator+=(const Vector<4> &rhs) {
+        x += rhs.x;
+        y += rhs.y;
+        z += rhs.z;
+        w += rhs.w;
+
+        return *this;
+    }
+
+    Vector<4> &operator-=(const Vector<4> &rhs) {
+        x -= rhs.x;
+        y -= rhs.y;
+        z -= rhs.z;
+        w -= rhs.w;
+
+        return *this;
+    }
+
+    Vector<4> operator+(const Vector<4> &rhs) const {
+        return Vector<4>(x + rhs.x, y + rhs.y, z + rhs.z, w + rhs.w);
+    }
+
+    Vector<4> operator-(const Vector<4> &rhs) const {
+        return Vector<4>(x - rhs.x, y - rhs.y, z - rhs.z, w - rhs.w);
+    }
+
+    Vector<4> operator-() const {
+        return Vector<4>(-x, -y, -z, -w);
+    }
+
+    float GetLength() const {
+        return sqrtf(GetLengthSquared());
+    }
+
+    float GetLengthSquared() const {
+        return x * x + y * y + z * z + w * w;
+    }
+
+    Vector<4> &Normalize() {
+        const float length = GetLength();
+
+        x /= length;
+        y /= length;
+        z /= length;
+        w /= length;
+
+        return *this;
+    }
+
+    bool IsNormalized(float epsilon = math::kSmallEpsilon) const {
+        return math::IsEqual(GetLength(), 1.f, epsilon);
+    }
+
+    float Dot(const Vector<4> &rhs) const {
+        return x * rhs.x + y * rhs.y + z * rhs.z + w * rhs.w;
+    }
+
+    Vector<4> operator*(const Vector<4> &rhs) const {
+        return Vector<4>(x * rhs.x, y * rhs.y, z * rhs.z, w * rhs.w);
+    }
+
+    bool IsZero() const {
+        return math::IsZero(x) && math::IsZero(y) && math::IsZero(z) && math::IsZero(w);
+    }
+
+    Vector<2> AsVec2() const;
+
+    Vector<3> AsVec3() const;
+
+public:
+    union {
+        struct {
+            float x, y, z, w;
+        };
+
+        std::array<float, 4> values;
+    };
 };
 
 using Vector2 = Vector<2>;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <list>
+#include <vector>
 
 #include "camera.h"
 #include "view.h"
@@ -42,5 +42,5 @@ private:
     std::unique_ptr<View> view_;
 
 private:
-    std::list<std::shared_ptr<Controller>> controllers_;
+    std::vector<std::shared_ptr<Controller>> controllers_;
 };

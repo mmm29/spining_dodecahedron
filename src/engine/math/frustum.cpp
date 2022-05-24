@@ -29,7 +29,7 @@ void Frustum::SetFromModelViewProjection(const Matrix4 &model_view_projection) {
 
     // Normalize planes
     for (size_t plane_idx = 0; plane_idx < kPlanesCount; plane_idx++) {
-        Vector3 plane_normal(planes[plane_idx][0], planes[plane_idx][1], planes[plane_idx][2]);
+        Vector3 plane_normal = planes[plane_idx].AsVec3();
         const float length = plane_normal.GetLength();
 
         Plane &plane = planes_[plane_idx];

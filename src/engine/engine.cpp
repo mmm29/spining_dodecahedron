@@ -34,20 +34,19 @@ void Engine::Draw() {
     frustum.Invert();
 
     const auto to_screen = [&](const Vector3 &world_pos) -> Vector2 {
-        Vector4 res(world_pos[0], world_pos[1], world_pos[2], 1.f);
-        res = view_->GetViewData().view_projection_matrix * res;
+        Vector4 point = view_->GetViewData().view_projection_matrix * world_pos.AsVec4();
 
-        assert(res[3] > 0 && "W value must be greater than zero");
+        assert(point[3] > 0 && "W value must be greater than zero");
 
-        res /= res[3];
+        point /= point[3];
 
-        assert(math::IsInRange(res[0], -1.0f, 1.0f, math::kLargeEpsilon) && "X value is not in range [-1,1]");
-        assert(math::IsInRange(res[1], -1.0f, 1.0f, math::kLargeEpsilon) && "Y value is not in range [-1,1]");
-        assert(math::IsInRange(res[2], 0.0f, 1.0f, math::kLargeEpsilon) && "Z value must be normalized");
+        assert(math::IsInRange(point[0], -1.0f, 1.0f, math::kLargeEpsilon) && "X value is not in range [-1,1]");
+        assert(math::IsInRange(point[1], -1.0f, 1.0f, math::kLargeEpsilon) && "Y value is not in range [-1,1]");
+        assert(math::IsInRange(point[2], 0.0f, 1.0f, math::kLargeEpsilon) && "Z value must be normalized");
 
-        res = screen_space_matrix_ * res;
+        point = screen_space_matrix_ * point;
 
-        return Vector2(res[0], res[1]);
+        return point.AsVec2();
     };
 
     const auto draw_line = [&](Vector3 from, Vector3 to, const Color &color) {
