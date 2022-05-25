@@ -92,6 +92,12 @@ public:
         return *this;
     }
 
+    Vector<2> GetNormalized() const {
+        const float length = GetLength();
+
+        return Vector<2>(x / length, y / length);
+    }
+
     bool IsNormalized(float epsilon = math::kSmallEpsilon) const {
         return math::IsEqual(GetLength(), 1.f, epsilon);
     }
@@ -208,6 +214,12 @@ public:
         z /= length;
 
         return *this;
+    }
+
+    Vector<3> GetNormalized() const {
+        const float length = GetLength();
+
+        return Vector<3>(x / length, y / length, z / length);
     }
 
     bool IsNormalized(float epsilon = math::kSmallEpsilon) const {
@@ -337,6 +349,12 @@ public:
         w /= length;
 
         return *this;
+    }
+
+    Vector<4> GetNormalized() const {
+        const float length = GetLength();
+
+        return Vector<4>(x / length, y / length, z / length, w / length);
     }
 
     bool IsNormalized(float epsilon = math::kSmallEpsilon) const {
