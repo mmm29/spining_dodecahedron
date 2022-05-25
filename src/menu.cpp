@@ -67,6 +67,8 @@ void Menu::Draw(DrawData *data) {
 
     ImGui::Begin("Menu", &menu_active_);
 
+    ImGui::Text("FPS: %f (%f ms/frame)", ImGui::GetIO().Framerate, 1000.f / ImGui::GetIO().Framerate);
+
     ImGui::Checkbox("Show demo", &show_demo);
 
     ImGui::ColorEdit3("Background color", data->window_background_color);
