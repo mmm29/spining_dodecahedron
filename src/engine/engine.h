@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <vector>
+#include <list>
 
 #include "world.h"
 #include "camera.h"
@@ -22,18 +22,21 @@ class Engine {
 public:
     void Initialize(const ViewPort &viewport, std::shared_ptr<render::Renderer> &renderer);
 
+    void Update(float ts);
+
     void Draw();
 
+public:
     std::shared_ptr<Camera> GetActiveCamera() const;
 
     void SetActiveCamera(const std::shared_ptr<Camera> &camera);
 
     std::shared_ptr<Camera> CreateCamera();
 
+public:
     void AttachController(const std::shared_ptr<Controller> &controller);
 
-    void Update(float ts);
-
+public:
     std::shared_ptr<World> GetWorld() const;
 
 private:
@@ -47,5 +50,5 @@ private:
     std::unique_ptr<View> view_;
 
 private:
-    std::vector<std::shared_ptr<Controller>> controllers_;
+    std::list<std::shared_ptr<Controller>> controllers_;
 };

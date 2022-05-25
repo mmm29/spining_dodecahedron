@@ -78,9 +78,9 @@ void Engine::Draw() {
         if (triangle_dot > 0)
             return;
 
-        Color color(static_cast<uint8_t>(static_cast<float>(color0.r) * (0.3f * std::abs(triangle_dot) + 0.7f)),
-                    static_cast<uint8_t>(static_cast<float>(color0.g) * (0.3f * std::abs(triangle_dot) + 0.7f)),
-                    static_cast<uint8_t>(static_cast<float>(color0.b) * (0.3f * std::abs(triangle_dot) + 0.7f)),
+        Color color(static_cast<uint8_t>(static_cast<float>(color0.r) * (0.7f + 0.3f * std::abs(triangle_dot))),
+                    static_cast<uint8_t>(static_cast<float>(color0.g) * (0.7f + 0.3f * std::abs(triangle_dot))),
+                    static_cast<uint8_t>(static_cast<float>(color0.b) * (0.7f + 0.3f * std::abs(triangle_dot))),
                     color0.a);
 
         std::list<std::array<Vector3, 3>> triangles;
@@ -160,6 +160,9 @@ void Engine::Draw() {
         auto bodies = world_->ListObjects();
 
         for (const auto &rigid_body : bodies) {
+            if (!rigid_body->IsVisible())
+                continue;
+
             const Matrix4 model_matrix = rigid_body->GetModelMatrix();
             const auto &mesh = rigid_body->GetMesh();
 

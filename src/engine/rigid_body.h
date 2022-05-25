@@ -11,6 +11,12 @@ public:
 
     std::shared_ptr<Mesh> GetMesh() const;
 
+    bool IsVisible() const;
+
+    void SetVisible(bool visible);
+
 private:
     std::shared_ptr<Mesh> mesh_;
+
+    bool visible_ = true;
 };
