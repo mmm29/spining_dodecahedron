@@ -69,13 +69,13 @@ void Engine::Draw() {
 
     const auto draw_clipped_triangles = [&](std::list<std::array<Vector3, 3>> &triangles, const Color &color) {
         for (const std::array<Vector3, 3> &triangle : triangles) {
-            std::array<Vector2, 3> screen_pos = {to_screen(triangle[0]),
-                                                 to_screen(triangle[1]),
-                                                 to_screen(triangle[2])};
+            Vector2 screen_pos[3] = {to_screen(triangle[0]),
+                                     to_screen(triangle[1]),
+                                     to_screen(triangle[2])};
 
-            renderer.DrawTriangle(to_screen(triangle[0]),
-                                  to_screen(triangle[1]),
-                                  to_screen(triangle[2]),
+            renderer.DrawTriangle(screen_pos[0],
+                                  screen_pos[1],
+                                  screen_pos[2],
                                   color);
 
             DebugSettings::TriangleSettings &triangle_settings = settings_.debug.clipped_triangle;
