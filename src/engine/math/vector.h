@@ -13,13 +13,18 @@ struct Vector;
 template<>
 struct Vector<2> {
 public:
-    Vector() : values{} {}
+    Vector() = default;
 
     Vector(std::initializer_list<float> il) : values{il.begin()[0], il.begin()[1]} {}
 
     Vector(float x, float y) : x(x), y(y) {}
 
 public:
+    void SetZero() {
+        x = 0;
+        y = 0;
+    }
+
     inline float &operator[](ptrdiff_t index) {
         return values[index];
     }
@@ -132,13 +137,19 @@ public:
 template<>
 struct Vector<3> {
 public:
-    Vector() : values{} {}
+    Vector() = default;
 
     Vector(std::initializer_list<float> il) : values{il.begin()[0], il.begin()[1], il.begin()[2]} {}
 
     Vector(float x, float y, float z) : x(x), y(y), z(z) {}
 
 public:
+    void SetZero() {
+        x = 0;
+        y = 0;
+        z = 0;
+    }
+
     inline float &operator[](ptrdiff_t index) {
         return values[index];
     }
@@ -262,13 +273,20 @@ public:
 template<>
 struct Vector<4> {
 public:
-    Vector() : values{} {}
+    Vector() = default;
 
     Vector(std::initializer_list<float> il) : values{il.begin()[0], il.begin()[1], il.begin()[2], il.begin()[3]} {}
 
     Vector(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
 
 public:
+    void SetZero() {
+        x = 0;
+        y = 0;
+        z = 0;
+        w = 0;
+    }
+
     inline float &operator[](ptrdiff_t index) {
         return values[index];
     }
