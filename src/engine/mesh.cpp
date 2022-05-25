@@ -10,7 +10,7 @@ void Mesh::SetFaces(std::vector<Face> &&faces) {
 
 void Mesh::Transform(const Matrix4 &transform) {
     for (Vertex &vertex : vertices_)
-        vertex.position = (transform * vertex.position.AsVec4()).AsVec3();
+        vertex.position = transform * vertex.position;
 }
 
 const std::vector<Mesh::Vertex> &Mesh::GetVertices() const {

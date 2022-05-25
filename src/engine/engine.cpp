@@ -47,9 +47,10 @@ void Engine::Draw() {
         assert(math::IsInRange(point[1], -1.0f, 1.0f, math::kLargeEpsilon) && "Y value is not in range [-1,1]");
         assert(math::IsInRange(point[2], 0.0f, 1.0f, math::kLargeEpsilon) && "Z value must be normalized");
 
-        point = screen_space_matrix_ * point;
+//        point = screen_space_matrix_ * point;
 
-        return point.AsVec2();
+        const ViewPort &viewport = view_->GetViewPort();
+        return Vector2(viewport.width / 2 * (1 + point[0]), viewport.height / 2 * (1 - point[1]));
     };
 
     const auto draw_line = [&](Vector3 from, Vector3 to, const Color &color) {
@@ -197,7 +198,7 @@ void Engine::Draw() {
                 std::array<Vector3, 3> position;
 
                 for (uint32_t i = 0; i < 3; i++)
-                    position[i] = (model_matrix * vertices[face.indices[i]].position.AsVec4()).AsVec3();
+                    position[i] = model_matrix * vertices[face.indices[i]].position;
 
                 draw_triangle(position[0], position[1], position[2], Color(0xFF, 0xD3, 0xC9, 0xFF));
             }
