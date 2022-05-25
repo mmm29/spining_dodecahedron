@@ -5,6 +5,7 @@
 
 #include "mesh.h"
 
+// Parser for .obj files
 class ObjParser {
 public:
     static std::shared_ptr<Mesh> Parse(const std::string &text);
