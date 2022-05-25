@@ -170,6 +170,12 @@ public:
                          values[3][0] * vec[0] + values[3][1] * vec[1] + values[3][2] * vec[2] + values[3][3] * vec[3]);
     }
 
+    Vector<3> operator*(const Vector<3> &vec) const {
+        return Vector<3>(values[0][0] * vec[0] + values[0][1] * vec[1] + values[0][2] * vec[2] + values[0][3],
+                         values[1][0] * vec[0] + values[1][1] * vec[1] + values[1][2] * vec[2] + values[1][3],
+                         values[2][0] * vec[0] + values[2][1] * vec[1] + values[2][2] * vec[2] + values[2][3]);
+    }
+
     Matrix<4, 4> operator-() const {
         return Matrix<4, 4>(-_11, -_12, -_13, -_14,
                             -_21, -_22, -_23, -_24,
