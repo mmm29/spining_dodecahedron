@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "math/vector.h"
 #include "math/matrix.h"
 
@@ -7,27 +9,43 @@ class Object {
 public:
     Object();
 
-    void SetPosition(const Vector3 &position);
+    void SetWorldPosition(const Vector3 &position);
 
-    const Vector3 &GetPosition() const;
+    Vector3 GetWorldPosition() const;
+
+    void Move(const Vector3 &offset);
+
+    void SetRelativePosition(const Vector3 &position);
+
+    Vector3 GetRelativePosition() const;
 
     void SetRotationAngles(const Vector2 &rotation_angles);
 
-    const Vector2 &GetRotationAngles() const;
+    Vector2 GetRotationAngles() const;
 
     Vector3 GetDirectionForward() const;
 
     Matrix4 GetModelMatrix() const;
 
+public:
+    void AttachTo(const std::shared_ptr<Object> &object);
+
+    void Detach();
+
+    bool IsAttached() const;
+
 private:
-    void UpdateTransformationMatrix();
+    std::shared_ptr<Object> attached_to_;
+
+private:
+    void UpdateRotationMatrix();
 
 protected:
-    Vector3 position_;
+    mutable Vector3 position_; // TODO: remove mutable
 
-    Vector2 rotation_angles_;
+    mutable Vector2 rotation_angles_; // TODO: remove mutable
 
-    Matrix4 rotation_matrix_;
+    mutable Matrix4 rotation_matrix_; // TODO: remove mutable
 
     Vector3 direction_;
 };

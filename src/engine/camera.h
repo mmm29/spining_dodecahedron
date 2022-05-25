@@ -10,8 +10,6 @@
 
 struct CameraInitializationParameters {
     float aspect_ratio;
-
-    std::weak_ptr<World> world;
 };
 
 class Camera : public Object {
@@ -23,10 +21,12 @@ public:
 
     float GetFieldOfView() const;
 
+public:
     float GetNearZ() const;
 
     void SetNearZ(float near_z);
 
+public:
     float GetFarZ() const;
 
     void SetFarZ(float far_z);
@@ -49,9 +49,6 @@ private:
     float far_z_ = 100.f;
 
     float aspect_ratio_;
-
-private:
-    std::weak_ptr<World> world_;
 
 private:
     // Cached matrices

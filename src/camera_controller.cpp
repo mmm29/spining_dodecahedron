@@ -14,7 +14,7 @@ void CameraController::HandleMouseMovement(int x_offset, int y_offset) {
     if (!engine_)
         return;
 
-    auto camera = engine_->GetActiveCamera();
+    std::shared_ptr<Camera> camera = engine_->GetActiveCamera();
     assert(camera && "No active camera.");
 
     Vector2 rotation_angeles_change(x_offset, -y_offset);
@@ -28,7 +28,7 @@ void CameraController::HandleMouseMovement(int x_offset, int y_offset) {
 void CameraController::Update(float ts) {
     assert(engine_ && "OnAttach has not been called.");
 
-    auto camera = engine_->GetActiveCamera();
+    std::shared_ptr<Camera> camera = engine_->GetActiveCamera();
     assert(camera && "No active camera.");
 
     Vector3 direction = camera->GetDirectionForward();
@@ -67,6 +67,6 @@ void CameraController::Update(float ts) {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
             offset *= fast_moving_speed_multiplier_;
 
-        camera->SetPosition(camera->GetPosition() + offset);
+        camera->Move(offset);
     }
 }

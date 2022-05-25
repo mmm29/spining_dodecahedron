@@ -6,7 +6,6 @@
 
 void Camera::Initialize(const CameraInitializationParameters &params) {
     aspect_ratio_ = params.aspect_ratio;
-    world_ = params.world;
 
     ResetCachedMatrices();
 }
@@ -43,7 +42,11 @@ void Camera::SetFarZ(float far_z) {
 }
 
 Matrix4 Camera::ComputeViewMatrix() const {
-    return CreateViewMatrix(position_, rotation_matrix_.GetRow<3>(0),
+    if (IsAttached())
+        position_ = -direction_ * 10;
+
+    return CreateViewMatrix(GetWorldPosition(),
+                            rotation_matrix_.GetRow<3>(0),
                             rotation_matrix_.GetRow<3>(1),
                             rotation_matrix_.GetRow<3>(2));
 }

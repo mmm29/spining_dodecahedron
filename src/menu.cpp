@@ -56,6 +56,27 @@ namespace ImGui {
     }
 }
 
+static void DrawObjectProperties(Object *object) {
+    // Position
+    Vector3 world_position = object->GetWorldPosition();
+    if (ImGui::DragFloat3("World position", &world_position[0], 0.01))
+        object->SetWorldPosition(world_position);
+
+    // Position
+    Vector3 relative_position = object->GetRelativePosition();
+    if (ImGui::DragFloat3("Relative position", &relative_position[0], 0.01))
+        object->SetRelativePosition(relative_position);
+
+    // Rotation
+    Vector2 rotation_angles = object->GetRotationAngles() * Degree(1);
+    if (ImGui::DragFloat2("Rotation", &rotation_angles[0], 1, -360, 360))
+        object->SetRotationAngles(rotation_angles * Radians(1));
+
+    // Direction forward
+    Vector3 direction = object->GetDirectionForward();
+    ImGui::InputFloat3("Direction forward", &direction[0], "%.8f", ImGuiInputTextFlags_ReadOnly);
+}
+
 void Menu::Draw(DrawData *data) {
     if (!menu_active_)
         return;
@@ -73,6 +94,48 @@ void Menu::Draw(DrawData *data) {
 
     ImGui::ColorEdit3("Background color", data->window_background_color);
 
+    if (ImGui::CollapsingHeader("Settings")) {
+        const auto show_triangles_settings = [&](DebugSettings::TriangleSettings &triangle_settings) {
+            ImGui::Checkbox("Show outlines", &triangle_settings.outlines.show);
+            if (triangle_settings.outlines.show)
+                ImGui::ColorEdit4("Outlines color", &triangle_settings.outlines.color);
+
+
+            ImGui::Checkbox("Show normals", &triangle_settings.normals.show);
+            if (triangle_settings.normals.show) {
+                ImGui::ColorEdit4("Normals color", &triangle_settings.normals.color);
+                ImGui::DragFloat("Normals lengths", &triangle_settings.normals.length, 0.1);
+            }
+        };
+
+        Settings *settings = data->engine->AccessSettings();
+
+        if (ImGui::TreeNode("Triangles")) {
+            show_triangles_settings(settings->debug.triangle);
+            ImGui::TreePop();
+        }
+
+        if (ImGui::TreeNode("Clipped triangles")) {
+            show_triangles_settings(settings->debug.clipped_triangle);
+            ImGui::TreePop();
+        }
+    }
+
+    if (ImGui::CollapsingHeader("Objects")) {
+        const std::list<std::shared_ptr<RigidBody>> &bodies = data->engine->GetWorld()->ListObjects();
+
+        for (const std::shared_ptr<RigidBody> &body : bodies) {
+            if (ImGui::TreeNode(body.get(), "body 0x%p", body.get())) {
+                bool visible = body->IsVisible();
+                if (ImGui::Checkbox("Visible", &visible))
+                    body->SetVisible(visible);
+
+                DrawObjectProperties(body.get());
+                ImGui::TreePop();
+            }
+        }
+    }
+
     if (ImGui::CollapsingHeader("Cameras")) {
         // Create camera
         static char camera_name[64] = {};
@@ -84,17 +147,17 @@ void Menu::Draw(DrawData *data) {
         if (ImGui::BeginPopupContextItem("create_camera_popup")) {
             ImGui::InputText("Name", camera_name, sizeof(camera_name));
             if (ImGui::Button("Create")) {
-                auto camera = data->engine->CreateCamera();
+                std::shared_ptr<Camera> camera = data->engine->CreateCamera();
                 data->cameras[camera_name] = CameraInfo{.camera = camera};
             }
             ImGui::EndPopup();
         }
 
-        auto active_camera = data->engine->GetActiveCamera();
+        std::shared_ptr<Camera> active_camera = data->engine->GetActiveCamera();
 
         for (auto it = data->cameras.begin(); it != data->cameras.end();) {
             CameraInfo &camera_info = it->second;
-            auto camera = camera_info.camera;
+            const std::shared_ptr<Camera> &camera = camera_info.camera;
 
             const bool is_this_camera_active = camera == active_camera;
             bool delete_camera = false;
@@ -106,6 +169,11 @@ void Menu::Draw(DrawData *data) {
                 ImGui::Text("Is active: %s", is_this_camera_active ? "Yes" : "No");
                 if (!is_this_camera_active && ImGui::Button("Set active"))
                     data->engine->SetActiveCamera(camera);
+
+                // Attach/detach
+                ImGui::Text("Is attached: %s", camera->IsAttached() ? "Yes" : "No");
+                if (camera->IsAttached() && ImGui::Button("Detach"))
+                    camera->Detach();
 
                 // Delete
                 if (data->cameras.size() > 1) {
@@ -133,19 +201,7 @@ void Menu::Draw(DrawData *data) {
                 if (ImGui::DragFloat("Far Z", &far_z, 0.05, 0.001))
                     camera->SetFarZ(far_z);
 
-                // Position
-                Vector3 camera_position = camera->GetPosition();
-                if (ImGui::DragFloat3("Position", &camera_position[0], 0.01))
-                    camera->SetPosition(camera_position);
-
-                // Rotation
-                Vector2 rotation_angles = camera->GetRotationAngles() * Degree(1);
-                if (ImGui::DragFloat2("Rotation", &rotation_angles[0], 1, -360, 360))
-                    camera->SetRotationAngles(rotation_angles * Radians(1));
-
-                // Direction forward
-                Vector3 direction = camera->GetDirectionForward();
-                ImGui::InputFloat3("Direction forward", &direction[0], "%.8f", ImGuiInputTextFlags_ReadOnly);
+                DrawObjectProperties(camera.get());
 
                 ImGui::TreePop();
             }

@@ -9,6 +9,7 @@
 #include "math/matrix.h"
 #include "controller.h"
 #include "render/renderer.h"
+#include "settings.h"
 
 // TODO: remove it
 struct CameraInfo {
@@ -39,6 +40,10 @@ public:
 public:
     std::shared_ptr<World> GetWorld() const;
 
+public:
+    Settings *AccessSettings();
+
+    void SetDefaultSettings();
 private:
     Matrix4 screen_space_matrix_;
 
@@ -51,4 +56,7 @@ private:
 
 private:
     std::list<std::shared_ptr<Controller>> controllers_;
+
+private:
+    Settings settings_;
 };

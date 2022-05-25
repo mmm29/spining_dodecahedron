@@ -13,8 +13,7 @@ void Engine::Initialize(const ViewPort &viewport, std::shared_ptr<render::Render
 
     auto camera = std::make_shared<Camera>();
     camera->Initialize(CameraInitializationParameters{
-            .aspect_ratio = viewport.GetAspectRatio(),
-            .world = world_
+            .aspect_ratio = viewport.GetAspectRatio()
     });
 
     view_ = std::make_unique<View>();
@@ -22,6 +21,8 @@ void Engine::Initialize(const ViewPort &viewport, std::shared_ptr<render::Render
     view_->SetCamera(camera);
 
     screen_space_matrix_ = CreateScreenSpaceMatrix(Vector2(viewport.width, viewport.height));
+
+    SetDefaultSettings();
 }
 
 extern std::unordered_map<std::string, CameraInfo> *cameras; // TODO: remove it
@@ -66,12 +67,12 @@ void Engine::Draw() {
         renderer.DrawLine(to_screen(from), to_screen(to), color);
     };
 
-    auto draw_triangle = [&](const Vector3 &p1, const Vector3 &p2, const Vector3 &p3, const Color &color0) {
+    const auto draw_triangle = [&](const Vector3 &p1, const Vector3 &p2, const Vector3 &p3, const Color &color0) {
         Vector3 triangle_normal = (p2 - p1).Cross(p3 - p1);
         triangle_normal.Normalize();
 
         const Vector3 triangle_center = (p1 + p2 + p3) / 3;
-        Vector3 direction_to_triangle = triangle_center - view_->GetCamera()->GetPosition();
+        Vector3 direction_to_triangle = triangle_center - view_->GetCamera()->GetWorldPosition();
         direction_to_triangle.Normalize(); // TODO: Is it necessary?
 
         const float triangle_dot = triangle_normal.Dot(direction_to_triangle);
@@ -140,7 +141,7 @@ void Engine::Draw() {
             }
         }
 
-        for (const auto &triangle : triangles) {
+        for (const std::array<Vector3, 3> &triangle : triangles) {
             std::array<Vector2, 3> screen_pos = {to_screen(triangle[0]),
                                                  to_screen(triangle[1]),
                                                  to_screen(triangle[2])};
@@ -150,21 +151,34 @@ void Engine::Draw() {
                                   to_screen(triangle[2]),
                                   color);
 
-            renderer.DrawLine(screen_pos[0], screen_pos[1], Color::Blue());
-            renderer.DrawLine(screen_pos[0], screen_pos[2], Color::Blue());
-            renderer.DrawLine(screen_pos[1], screen_pos[2], Color::Blue());
+            DebugSettings::TriangleSettings &triangle_settings = settings_.debug.clipped_triangle;
+
+            if (triangle_settings.normals.show) {
+                const Color normals_color = triangle_settings.normals.color;
+                const Vector3 clipped_triangle_center = (triangle[0] + triangle[1] + triangle[2]) / 3;
+                Vector3 clipped_triangle_normal = (triangle[1] - triangle[0]).Cross(triangle[2] - triangle[0]);
+                clipped_triangle_normal *= triangle_settings.normals.length / clipped_triangle_normal.GetLength();
+                draw_line(clipped_triangle_center, clipped_triangle_center + clipped_triangle_normal, normals_color);
+            }
+
+            if (triangle_settings.outlines.show) {
+                const Color outlines_color = triangle_settings.outlines.color;
+                renderer.DrawLine(screen_pos[0], screen_pos[1], outlines_color);
+                renderer.DrawLine(screen_pos[0], screen_pos[2], outlines_color);
+                renderer.DrawLine(screen_pos[1], screen_pos[2], outlines_color);
+            }
         }
     };
 
     {
-        auto bodies = world_->ListObjects();
+        const std::list<std::shared_ptr<RigidBody>> &bodies = world_->ListObjects();
 
-        for (const auto &rigid_body : bodies) {
+        for (const std::shared_ptr<RigidBody> &rigid_body : bodies) {
             if (!rigid_body->IsVisible())
                 continue;
 
             const Matrix4 model_matrix = rigid_body->GetModelMatrix();
-            const auto &mesh = rigid_body->GetMesh();
+            const std::shared_ptr<Mesh> &mesh = rigid_body->GetMesh();
 
             const std::vector<Mesh::Vertex> &vertices = mesh->GetVertices();
             const std::vector<Mesh::Face> &faces = mesh->GetFaces();
@@ -225,14 +239,14 @@ void Engine::Draw() {
     for (const auto &p : lines)
         draw_line(p.pos, p.pos2, p.col);
 
-    auto active_camera = GetActiveCamera();
+    std::shared_ptr<Camera> active_camera = GetActiveCamera();
 
     for (const auto &p : *cameras) {
         const CameraInfo &camera_info = p.second;
         if (!camera_info.show_viewing_frustum)
             continue;
 
-        auto camera = camera_info.camera;
+        const std::shared_ptr<Camera> &camera = camera_info.camera;
 
         if (camera == active_camera)
             continue; // It's the current camera.
@@ -274,8 +288,7 @@ void Engine::SetActiveCamera(const std::shared_ptr<Camera> &camera) {
 std::shared_ptr<Camera> Engine::CreateCamera() {
     auto camera = std::make_shared<Camera>();
     camera->Initialize(CameraInitializationParameters{
-            .aspect_ratio = view_->GetViewPort().GetAspectRatio(),
-            .world = std::weak_ptr<World>()
+            .aspect_ratio = view_->GetViewPort().GetAspectRatio()
     });
     return camera;
 }
@@ -292,4 +305,24 @@ void Engine::Update(float ts) {
 
 std::shared_ptr<World> Engine::GetWorld() const {
     return world_;
+}
+
+Settings *Engine::AccessSettings() {
+    return &settings_;
+}
+
+void Engine::SetDefaultSettings() {
+    settings_.debug.triangle.outlines.show = false;
+    settings_.debug.triangle.outlines.color = Color::Black();
+
+    settings_.debug.triangle.normals.show = false;
+    settings_.debug.triangle.normals.color = Color::Black();
+    settings_.debug.triangle.normals.length = 1.0f;
+
+    settings_.debug.clipped_triangle.outlines.show = false;
+    settings_.debug.clipped_triangle.outlines.color = Color::Black();
+
+    settings_.debug.clipped_triangle.normals.show = false;
+    settings_.debug.clipped_triangle.normals.color = Color::Black();
+    settings_.debug.clipped_triangle.normals.length = 1.0f;
 }

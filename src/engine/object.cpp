@@ -1,16 +1,36 @@
+#include <cassert>
+
 #include "math/angle.h"
 #include "math/matrix_transform.h"
 #include "object.h"
 
 Object::Object() {
-    UpdateTransformationMatrix();
+    UpdateRotationMatrix();
 }
 
-void Object::SetPosition(const Vector3 &position) {
+void Object::SetWorldPosition(const Vector3 &position) {
+    if (attached_to_)
+        position_ = position - attached_to_->GetWorldPosition();
+    else
+        position_ = position;
+}
+
+void Object::Move(const Vector3 &offset) {
+    position_ += offset;
+}
+
+Vector3 Object::GetWorldPosition() const {
+    if (attached_to_)
+        return attached_to_->GetWorldPosition() + position_;
+
+    return position_;
+}
+
+void Object::SetRelativePosition(const Vector3 &position) {
     position_ = position;
 }
 
-const Vector3 &Object::GetPosition() const {
+Vector3 Object::GetRelativePosition() const {
     return position_;
 }
 
@@ -26,10 +46,10 @@ void Object::SetRotationAngles(const Vector2 &rotation_angles) {
 
     rotation_angles_ = Vector2(yaw, pitch);
 
-    UpdateTransformationMatrix();
+    UpdateRotationMatrix();
 }
 
-const Vector2 &Object::GetRotationAngles() const {
+Vector2 Object::GetRotationAngles() const {
     return rotation_angles_;
 }
 
@@ -38,10 +58,32 @@ Vector3 Object::GetDirectionForward() const {
 }
 
 Matrix4 Object::GetModelMatrix() const {
-    return rotation_matrix_ * matrix::Translate(position_);
+    return matrix::Translate(position_) * rotation_matrix_;
 }
 
-void Object::UpdateTransformationMatrix() {
+void Object::AttachTo(const std::shared_ptr<Object> &object) {
+    assert(object.get() != this);
+
+    position_ = GetWorldPosition() - object->GetWorldPosition();
+
+    if (attached_to_)
+        position_ -= attached_to_->GetWorldPosition();
+
+    attached_to_ = object;
+}
+
+void Object::Detach() {
+    assert(attached_to_);
+
+    position_ += attached_to_->GetWorldPosition();
+    attached_to_ = nullptr;
+}
+
+bool Object::IsAttached() const {
+    return attached_to_ != nullptr;
+}
+
+void Object::UpdateRotationMatrix() {
     Matrix4 rotate_around_x = matrix::RotateAroundX(rotation_angles_[1]);
     Matrix4 rotate_around_y = matrix::RotateAroundY(-rotation_angles_[0]);
     rotation_matrix_ = rotate_around_x * rotate_around_y;
