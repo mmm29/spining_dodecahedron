@@ -67,80 +67,7 @@ void Engine::Draw() {
         renderer.DrawLine(to_screen(from), to_screen(to), color);
     };
 
-    const auto draw_triangle = [&](const Vector3 &p1, const Vector3 &p2, const Vector3 &p3, const Color &color0) {
-        Vector3 triangle_normal = (p2 - p1).Cross(p3 - p1);
-        triangle_normal.Normalize();
-
-        const Vector3 triangle_center = (p1 + p2 + p3) / 3;
-        Vector3 direction_to_triangle = triangle_center - view_->GetCamera()->GetWorldPosition();
-        direction_to_triangle.Normalize(); // TODO: Is it necessary?
-
-        const float triangle_dot = triangle_normal.Dot(direction_to_triangle);
-        if (triangle_dot > 0)
-            return;
-
-        Color color(static_cast<uint8_t>(static_cast<float>(color0.r) * (0.7f + 0.3f * std::abs(triangle_dot))),
-                    static_cast<uint8_t>(static_cast<float>(color0.g) * (0.7f + 0.3f * std::abs(triangle_dot))),
-                    static_cast<uint8_t>(static_cast<float>(color0.b) * (0.7f + 0.3f * std::abs(triangle_dot))),
-                    color0.a);
-
-        std::list<std::array<Vector3, 3>> triangles;
-        triangles.emplace_back(std::array<Vector3, 3>{p1, p2, p3});
-
-        for (const Plane &clipping_plane : frustum.planes_) {
-            for (auto it = triangles.begin(); it != triangles.end();) {
-                std::array<Vector3, 3> &triangle_points = *it;
-
-                std::vector<Vector3> inside_points;
-                std::vector<Vector3> outside_points;
-
-                for (const Vector3 &point : triangle_points) {
-                    if (clipping_plane.IsOutside(point))
-                        outside_points.push_back(point);
-                    else
-                        inside_points.push_back(point);
-                }
-
-                assert(inside_points.size() + outside_points.size() == 3);
-
-                if (inside_points.empty()) {
-                    it = triangles.erase(it);
-                    continue;
-                }
-
-                if (outside_points.empty()) {
-                    ++it;
-                    continue;
-                }
-
-                if (inside_points.size() == 1) {
-                    Plane::Intersection intersection1 = clipping_plane.IntersectLine(inside_points[0],
-                                                                                     outside_points[0]);
-                    Plane::Intersection intersection2 = clipping_plane.IntersectLine(inside_points[0],
-                                                                                     outside_points[1]);
-
-                    assert(intersection1.Exists());
-                    assert(intersection2.Exists());
-
-                    triangle_points = {inside_points[0], intersection1.Point(), intersection2.Point()};
-                } else {
-                    assert(inside_points.size() == 2);
-
-                    Plane::Intersection intersection1 = clipping_plane.IntersectLine(inside_points[0],
-                                                                                     outside_points[0]);
-                    Plane::Intersection intersection2 = clipping_plane.IntersectLine(inside_points[1],
-                                                                                     outside_points[0]);
-                    assert(intersection1.Exists());
-                    assert(intersection2.Exists());
-
-                    triangle_points = {inside_points[0], intersection1.Point(), inside_points[1]};
-                    triangles.emplace(it, std::array<Vector3, 3>{intersection1.Point(),
-                                                                 intersection2.Point(), inside_points[1]});
-                }
-                ++it;
-            }
-        }
-
+    const auto draw_clipped_triangles = [&](std::list<std::array<Vector3, 3>> &triangles, const Color &color) {
         for (const std::array<Vector3, 3> &triangle : triangles) {
             std::array<Vector2, 3> screen_pos = {to_screen(triangle[0]),
                                                  to_screen(triangle[1]),
@@ -168,6 +95,89 @@ void Engine::Draw() {
                 renderer.DrawLine(screen_pos[1], screen_pos[2], outlines_color);
             }
         }
+    };
+
+    const auto clip_triangles = [&](std::list<std::array<Vector3, 3>> &triangles) {
+        for (const Plane &clipping_plane : frustum.planes_) {
+            for (auto it = triangles.begin(); it != triangles.end();) {
+                std::array<Vector3, 3> &triangle_points = *it;
+
+                Vector3 inside_points[3];
+                uint32_t inside_points_count = 0;
+                Vector3 outside_points[3];
+                uint32_t outside_points_count = 0;
+
+                for (const Vector3 &point : triangle_points) {
+                    if (clipping_plane.IsOutside(point))
+                        outside_points[outside_points_count++] = point;
+                    else
+                        inside_points[inside_points_count++] = point;
+                }
+
+                assert(inside_points_count + outside_points_count == 3);
+
+                if (inside_points_count == 0) {
+                    it = triangles.erase(it);
+                    continue;
+                }
+
+                if (outside_points_count == 0) {
+                    ++it;
+                    continue;
+                }
+
+                if (inside_points_count == 1) {
+                    Plane::Intersection intersection1 = clipping_plane.IntersectLine(inside_points[0],
+                                                                                     outside_points[0]);
+                    Plane::Intersection intersection2 = clipping_plane.IntersectLine(inside_points[0],
+                                                                                     outside_points[1]);
+
+                    assert(intersection1.Exists());
+                    assert(intersection2.Exists());
+
+                    triangle_points = {inside_points[0], intersection1.Point(), intersection2.Point()};
+                } else {
+                    assert(inside_points_count == 2);
+
+                    Plane::Intersection intersection1 = clipping_plane.IntersectLine(inside_points[0],
+                                                                                     outside_points[0]);
+                    Plane::Intersection intersection2 = clipping_plane.IntersectLine(inside_points[1],
+                                                                                     outside_points[0]);
+                    assert(intersection1.Exists());
+                    assert(intersection2.Exists());
+
+                    triangle_points = {inside_points[0], intersection1.Point(), inside_points[1]};
+                    triangles.emplace(it, std::array<Vector3, 3>{intersection1.Point(),
+                                                                 intersection2.Point(), inside_points[1]});
+                }
+                ++it;
+            }
+        }
+    };
+
+    const auto draw_triangle = [&](const Vector3 &p1, const Vector3 &p2, const Vector3 &p3, const Color &color0) {
+        Vector3 triangle_normal = (p2 - p1).Cross(p3 - p1);
+        triangle_normal.Normalize();
+
+        const Vector3 triangle_center = (p1 + p2 + p3) / 3;
+        Vector3 direction_to_triangle = triangle_center - view_->GetCamera()->GetWorldPosition();
+        direction_to_triangle.Normalize(); // TODO: Is it necessary?
+
+        const float triangle_dot = triangle_normal.Dot(direction_to_triangle);
+        if (triangle_dot > 0)
+            return;
+
+        Color color(static_cast<uint8_t>(static_cast<float>(color0.r) * (0.7f + 0.3f * std::abs(triangle_dot))),
+                    static_cast<uint8_t>(static_cast<float>(color0.g) * (0.7f + 0.3f * std::abs(triangle_dot))),
+                    static_cast<uint8_t>(static_cast<float>(color0.b) * (0.7f + 0.3f * std::abs(triangle_dot))),
+                    color0.a);
+
+        std::list<std::array<Vector3, 3>> triangles;
+        triangles.emplace_back(std::array<Vector3, 3>{p1, p2, p3});
+
+        clip_triangles(triangles);
+
+        draw_clipped_triangles(triangles, color);
     };
 
     {
