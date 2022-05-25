@@ -89,13 +89,13 @@ int main() {
     cameras = &menu_data.cameras; // TODO: remove it
 
     {
-        std::string cube_obj_text = ReadFile("obj/dodecahedron.obj");
+        std::string cube_obj_text = ReadFile("obj/armadillo.obj");
         assert(!cube_obj_text.empty());
 
         std::shared_ptr<Mesh> cube_mesh = ObjParser::Parse(cube_obj_text);
         assert(cube_mesh);
 
-        cube_mesh->Transform(matrix::Scale(2.0f));
+        cube_mesh->Transform(matrix::Scale(0.05f));
 
         auto cube = std::make_shared<RigidBody>();
         cube->SetMesh(cube_mesh);

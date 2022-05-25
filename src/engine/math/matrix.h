@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdint>
-#include <array>
+#include <utility>
 
 #include "vector.h"
 
@@ -37,19 +37,19 @@ public:
     }
 
 public:
-    float &at(size_t row, size_t col) {
+    inline float &at(size_t row, size_t col) {
         return values_[row][col];
     }
 
-    const float &at(size_t row, size_t col) const {
+    inline const float &at(size_t row, size_t col) const {
         return values_[row][col];
     }
 
-    std::array<float, Cols> &operator[](size_t row) {
+    inline float *operator[](size_t row) {
         return values_[row];
     }
 
-    const std::array<float, Cols> &operator[](size_t row) const {
+    inline const float *operator[](size_t row) const {
         return values_[row];
     }
 
@@ -192,7 +192,7 @@ public:
     }
 
 private:
-    std::array<std::array<float, Cols>, Rows> values_;
+    float values_[Rows][Cols];
 };
 
 using Matrix4 = Matrix<4, 4>;
