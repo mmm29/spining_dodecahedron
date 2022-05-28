@@ -4,7 +4,10 @@
 
 ### Controls
 F2 - menu  
-W, A, S, D - moving (when camera detached)
+W, A, S, D - moving (when camera detached)  
+Space - moving up  
+Left control - moving down  
+Left shift - fast move
 
 ## Third-party
 
