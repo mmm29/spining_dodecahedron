@@ -154,12 +154,13 @@ int main() {
         std::shared_ptr<Mesh> mesh = ObjParser::Parse(dodecahedron_obj, sizeof(dodecahedron_obj) - 1);
         assert(mesh && "Failed to parse mesh .obj file.");
 
-        mesh->Transform(matrix::Scale(2.f));
+        mesh->Transform(matrix::Scale(3.f));
 
         auto obj = std::make_shared<RigidBody>();
         obj->SetMesh(mesh);
         obj->SetColor(Color(0xFF, 0xD3, 0xC9, 0xFF));
         obj->SetWorldPosition(Vector3(10, 10, 10));
+        obj->SetRotationVelocity(Vector2(M_PI / 2, M_PI / 2));
 
         engine.GetWorld()->AddObject(obj);
         engine.GetActiveCamera()->AttachTo(obj);

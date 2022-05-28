@@ -22,13 +22,18 @@ void CameraController::HandleMouseMovement(int x_offset, int y_offset) {
     static const float kDefaultCameraRotation = Radians(3.f / 25.f);
     rotation_angeles_change *= kDefaultCameraRotation * mouse_sensitivity_;
 
-    camera->SetRotationAngles(camera->GetRotationAngles() + rotation_angeles_change);
+    Vector2 rotation_angles = camera->GetRotationAngles() + rotation_angeles_change;
+
+    // Limit the pitch angle range to [-85 degree, 85 degree].
+    rotation_angles[1] = std::max(std::min(rotation_angles[1], Radians(85)), Radians(-85));
+
+    camera->SetRotationAngles(rotation_angles);
 }
 
 void CameraController::Update(float ts) {
     assert(engine_ && "OnAttach has not been called.");
 
-    std::shared_ptr <Camera> camera = engine_->GetActiveCamera();
+    std::shared_ptr<Camera> camera = engine_->GetActiveCamera();
     assert(camera && "No active camera.");
 
     Vector3 direction = camera->GetDirectionForward();
