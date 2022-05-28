@@ -25,6 +25,12 @@ public:
         y = 0;
     }
 
+    static Vector<2> Zero() {
+        Vector<2> result;
+        result.SetZero();
+        return result;
+    }
+
     inline float &operator[](ptrdiff_t index) {
         return values[index];
     }
@@ -148,6 +154,12 @@ public:
         x = 0;
         y = 0;
         z = 0;
+    }
+
+    static Vector<3> Zero() {
+        Vector<3> result;
+        result.SetZero();
+        return result;
     }
 
     inline float &operator[](ptrdiff_t index) {
@@ -285,6 +297,12 @@ public:
         y = 0;
         z = 0;
         w = 0;
+    }
+
+    static Vector<4> Zero() {
+        Vector<4> result;
+        result.SetZero();
+        return result;
     }
 
     inline float &operator[](ptrdiff_t index) {

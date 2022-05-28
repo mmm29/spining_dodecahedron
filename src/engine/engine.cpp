@@ -20,7 +20,7 @@ void Engine::Initialize(const ViewPort &viewport, std::shared_ptr<render::Render
     view_->SetViewPort(viewport);
     view_->SetCamera(camera);
 
-    screen_space_matrix_ = CreateScreenSpaceMatrix(Vector2(viewport.width, viewport.height));
+//    screen_space_matrix_ = CreateScreenSpaceMatrix(Vector2(viewport.width, viewport.height));
 
     SetDefaultSettings();
 }
@@ -54,7 +54,7 @@ void Engine::Draw() {
     };
 
     const auto draw_line = [&](Vector3 from, Vector3 to, const Color &color) {
-        for (const Plane &clipping_plane : frustum.planes_) {
+        for (const Plane &clipping_plane : frustum.GetPlanes()) {
             Plane::Intersection intersection = clipping_plane.IntersectLine(from, to);
             if (intersection.Exists()) {
                 if (clipping_plane.IsOutside(from))
@@ -99,7 +99,7 @@ void Engine::Draw() {
     };
 
     const auto clip_triangles = [&](std::list<std::array<Vector3, 3>> &triangles) {
-        for (const Plane &clipping_plane : frustum.planes_) {
+        for (const Plane &clipping_plane : frustum.GetPlanes()) {
             for (auto it = triangles.begin(); it != triangles.end();) {
                 std::array<Vector3, 3> &triangle_points = *it;
 
@@ -162,7 +162,7 @@ void Engine::Draw() {
 
         const Vector3 triangle_center = (p1 + p2 + p3) / 3;
         Vector3 direction_to_triangle = triangle_center - view_->GetCamera()->GetWorldPosition();
-        direction_to_triangle.Normalize(); // TODO: Is it necessary?
+        direction_to_triangle.Normalize();
 
         const float triangle_dot = triangle_normal.Dot(direction_to_triangle);
         if (triangle_dot > 0)
@@ -182,6 +182,7 @@ void Engine::Draw() {
     };
 
     {
+        // Draw rigid bodies
         const std::list<std::shared_ptr<RigidBody>> &bodies = world_->ListObjects();
 
         for (const std::shared_ptr<RigidBody> &rigid_body : bodies) {
@@ -194,97 +195,57 @@ void Engine::Draw() {
             const std::vector<Mesh::Vertex> &vertices = mesh->GetVertices();
             const std::vector<Mesh::Face> &faces = mesh->GetFaces();
 
+            const Color color = rigid_body->GetColor();
+
             for (const Mesh::Face &face : faces) {
                 std::array<Vector3, 3> position;
 
                 for (uint32_t i = 0; i < 3; i++)
                     position[i] = model_matrix * vertices[face.indices[i]].position;
 
-                draw_triangle(position[0], position[1], position[2], Color(0xFF, 0xD3, 0xC9, 0xFF));
+                draw_triangle(position[0], position[1], position[2], color);
             }
         }
     }
 
-    draw_triangle(Vector3(-5, -5, -5), Vector3(-0, 0, 0), Vector3(-5, -5, 5), Color::Red());
-
     {
-        static const Vector2 net_corners[2] = {
-                {-10.f, 0.1f},
-                {10.f,  10.1f}
-        };
-        static const float net_y = 0.f;
-        static const size_t net_shares = 100;
-        static const Vector2 net_share_step = (net_corners[1] - net_corners[0]) / net_shares;
-        static const Color net_color = Color::Green();
+        // Draw camera frustums.
 
-        // Vertical lines
-        for (size_t line = 0; line <= net_shares; line++) {
-            const float x = net_corners[0][0] + net_share_step[0] * static_cast<float>(line);
+        std::shared_ptr<Camera> active_camera = GetActiveCamera();
 
-            const Vector3 from = Vector3(x, net_y, net_corners[0][1]);
-            const Vector3 to = Vector3(x, net_y, net_corners[1][1]);
+        for (const auto &p : *cameras) {
+            const CameraInfo &camera_info = p.second;
+            if (!camera_info.show_viewing_frustum)
+                continue;
 
-            draw_line(from, to, net_color);
+            const std::shared_ptr<Camera> &camera = camera_info.camera;
+
+            if (camera == active_camera)
+                continue; // It's the current camera.
+
+            Frustum frustum;
+            frustum.SetFromModelViewProjection(camera_info.camera->ComputeViewProjectionMatrix());
+
+            std::array<Vector3, Frustum::kCornersCount> corner_points = frustum.ComputeCornerPoints();
+
+            const Color frustum_color = camera_info.viewing_frustum_color;
+
+            draw_line(corner_points[Frustum::kNearBottomLeft], corner_points[Frustum::kNearTopLeft], frustum_color);
+            draw_line(corner_points[Frustum::kNearBottomLeft], corner_points[Frustum::kNearBottomRight], frustum_color);
+            draw_line(corner_points[Frustum::kNearBottomLeft], corner_points[Frustum::kFarBottomLeft], frustum_color);
+
+            draw_line(corner_points[Frustum::kNearTopRight], corner_points[Frustum::kNearTopLeft], frustum_color);
+            draw_line(corner_points[Frustum::kNearTopRight], corner_points[Frustum::kNearBottomRight], frustum_color);
+            draw_line(corner_points[Frustum::kNearTopRight], corner_points[Frustum::kFarTopRight], frustum_color);
+
+            draw_line(corner_points[Frustum::kFarBottomRight], corner_points[Frustum::kNearBottomRight], frustum_color);
+            draw_line(corner_points[Frustum::kFarBottomRight], corner_points[Frustum::kFarTopRight], frustum_color);
+            draw_line(corner_points[Frustum::kFarBottomRight], corner_points[Frustum::kFarBottomLeft], frustum_color);
+
+            draw_line(corner_points[Frustum::kFarTopLeft], corner_points[Frustum::kNearTopLeft], frustum_color);
+            draw_line(corner_points[Frustum::kFarTopLeft], corner_points[Frustum::kFarTopRight], frustum_color);
+            draw_line(corner_points[Frustum::kFarTopLeft], corner_points[Frustum::kFarBottomLeft], frustum_color);
         }
-
-        // Horizontal lines
-        for (size_t line = 0; line <= net_shares; line++) {
-            const float z = net_corners[0][1] + net_share_step[1] * static_cast<float>(line);
-
-            const Vector3 from = Vector3(net_corners[0][0], net_y, z);
-            const Vector3 to = Vector3(net_corners[1][0], net_y, z);
-
-            draw_line(from, to, net_color);
-        }
-    }
-
-    static const struct {
-        Vector3 pos;
-        Vector3 pos2;
-        Color col;
-    } lines[] = {
-            {{0.5, 0, 1}, {1,   1,   5}, Color::Black()},
-            {{0.5, 0, 1}, {0.5, 0.2, 1}, Color::Red()}
-    };
-
-    for (const auto &p : lines)
-        draw_line(p.pos, p.pos2, p.col);
-
-    std::shared_ptr<Camera> active_camera = GetActiveCamera();
-
-    for (const auto &p : *cameras) {
-        const CameraInfo &camera_info = p.second;
-        if (!camera_info.show_viewing_frustum)
-            continue;
-
-        const std::shared_ptr<Camera> &camera = camera_info.camera;
-
-        if (camera == active_camera)
-            continue; // It's the current camera.
-
-        Frustum frustum;
-        frustum.SetFromModelViewProjection(camera_info.camera->ComputeViewProjectionMatrix());
-
-        std::array<Vector3, Frustum::kCornersCount> corner_points = frustum.ComputeCornerPoints();
-
-        const Color frustum_color = camera_info.viewing_frustum_color;
-
-        draw_line(corner_points[Frustum::kNearBottomLeft], corner_points[Frustum::kNearTopLeft], frustum_color);
-        draw_line(corner_points[Frustum::kNearBottomLeft], corner_points[Frustum::kNearBottomRight], frustum_color);
-        draw_line(corner_points[Frustum::kNearBottomLeft], corner_points[Frustum::kFarBottomLeft], frustum_color);
-
-        draw_line(corner_points[Frustum::kNearTopRight], corner_points[Frustum::kNearTopLeft], frustum_color);
-        draw_line(corner_points[Frustum::kNearTopRight], corner_points[Frustum::kNearBottomRight], frustum_color);
-        draw_line(corner_points[Frustum::kNearTopRight], corner_points[Frustum::kFarTopRight], frustum_color);
-
-        draw_line(corner_points[Frustum::kFarBottomRight], corner_points[Frustum::kNearBottomRight], frustum_color);
-        draw_line(corner_points[Frustum::kFarBottomRight], corner_points[Frustum::kFarTopRight], frustum_color);
-        draw_line(corner_points[Frustum::kFarBottomRight], corner_points[Frustum::kFarBottomLeft], frustum_color);
-
-        draw_line(corner_points[Frustum::kFarTopLeft], corner_points[Frustum::kNearTopLeft], frustum_color);
-        draw_line(corner_points[Frustum::kFarTopLeft], corner_points[Frustum::kFarTopRight], frustum_color);
-        draw_line(corner_points[Frustum::kFarTopLeft], corner_points[Frustum::kFarBottomLeft], frustum_color);
-
     }
 }
 
@@ -305,11 +266,18 @@ std::shared_ptr<Camera> Engine::CreateCamera() {
 }
 
 void Engine::AttachController(const std::shared_ptr<Controller> &controller) {
+    assert(controller);
+
     controllers_.push_back(controller);
     controller->OnAttach(this);
 }
 
 void Engine::Update(float ts) {
+    assert(view_->GetCamera());
+    view_->GetCamera()->Update(ts);
+
+    UpdateRotationVelocities(ts);
+
     for (const std::shared_ptr<Controller> &controller : controllers_)
         controller->Update(ts);
 }
@@ -336,4 +304,9 @@ void Engine::SetDefaultSettings() {
     settings_.debug.clipped_triangle.normals.show = false;
     settings_.debug.clipped_triangle.normals.color = Color::Black();
     settings_.debug.clipped_triangle.normals.length = 1.0f;
+}
+
+void Engine::UpdateRotationVelocities(float ts) {
+    for (const std::shared_ptr<RigidBody> &body : world_->ListObjects())
+        body->SetRotationAngles(body->GetRotationAngles() + body->GetRotationVelocity() * ts);
 }

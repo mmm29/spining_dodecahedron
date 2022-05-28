@@ -37,6 +37,8 @@ public:
 
     void Invert();
 
-public: // TODO: make it private
+    const std::array<Plane, kPlanesCount> &GetPlanes() const;
+
+private:
     std::array<Plane, kPlanesCount> planes_;
 };

@@ -5,6 +5,11 @@
 #include "object.h"
 
 Object::Object() {
+    position_.SetZero();
+    rotation_angles_.SetZero();
+    direction_.SetZero();
+    rotation_matrix_.SetIdentity();
+
     UpdateRotationMatrix();
 }
 

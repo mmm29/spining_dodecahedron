@@ -28,13 +28,13 @@ void CameraController::HandleMouseMovement(int x_offset, int y_offset) {
 void CameraController::Update(float ts) {
     assert(engine_ && "OnAttach has not been called.");
 
-    std::shared_ptr<Camera> camera = engine_->GetActiveCamera();
+    std::shared_ptr <Camera> camera = engine_->GetActiveCamera();
     assert(camera && "No active camera.");
 
     Vector3 direction = camera->GetDirectionForward();
     assert(direction.IsNormalized() && "Rotation vector is not normalized.");
 
-    Vector3 offset;
+    Vector3 offset = Vector3::Zero();
 
     // Forward
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))

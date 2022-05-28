@@ -32,11 +32,18 @@ public:
     void SetFarZ(float far_z);
 
 public:
+    void Update(float ts);
+
+public:
     Matrix4 ComputeViewMatrix() const;
 
     Matrix4 ComputeProjectionMatrix() const;
 
     Matrix4 ComputeViewProjectionMatrix() const;
+
+    void SetAttachDistance(float attach_distance);
+
+    float GetAttachDistance() const;
 
 private:
     void ResetCachedMatrices();
@@ -49,6 +56,9 @@ private:
     float far_z_ = 100.f;
 
     float aspect_ratio_;
+
+private:
+    float attach_distance_ = 10.f;
 
 private:
     // Cached matrices

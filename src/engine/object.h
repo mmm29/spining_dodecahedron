@@ -41,11 +41,11 @@ private:
     void UpdateRotationMatrix();
 
 protected:
-    mutable Vector3 position_; // TODO: remove mutable
+    Vector3 position_;
 
-    mutable Vector2 rotation_angles_; // TODO: remove mutable
+    Vector2 rotation_angles_;
 
-    mutable Matrix4 rotation_matrix_; // TODO: remove mutable
+    Matrix4 rotation_matrix_;
 
     Vector3 direction_;
 };

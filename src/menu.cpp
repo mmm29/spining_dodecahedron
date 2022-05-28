@@ -104,16 +104,17 @@ void Menu::Draw(DrawData *data) {
             ImGui::Checkbox("Show normals", &triangle_settings.normals.show);
             if (triangle_settings.normals.show) {
                 ImGui::ColorEdit4("Normals color", &triangle_settings.normals.color);
-                ImGui::DragFloat("Normals lengths", &triangle_settings.normals.length, 0.1);
+                ImGui::DragFloat("Normals lengths", &triangle_settings.normals.length, 0.1, 0, 100);
             }
         };
 
         Settings *settings = data->engine->AccessSettings();
 
-        if (ImGui::TreeNode("Triangles")) {
-            show_triangles_settings(settings->debug.triangle);
-            ImGui::TreePop();
-        }
+        // Temporarily doesn't work
+//        if (ImGui::TreeNode("Triangles")) {
+//            show_triangles_settings(settings->debug.triangle);
+//            ImGui::TreePop();
+//        }
 
         if (ImGui::TreeNode("Clipped triangles")) {
             show_triangles_settings(settings->debug.clipped_triangle);
@@ -129,6 +130,14 @@ void Menu::Draw(DrawData *data) {
                 bool visible = body->IsVisible();
                 if (ImGui::Checkbox("Visible", &visible))
                     body->SetVisible(visible);
+
+                Color color = body->GetColor();
+                if (ImGui::ColorEdit4("Color", &color))
+                    body->SetColor(color);
+
+                Vector2 rotation_velocity = body->GetRotationVelocity() * (180 / M_PI);
+                if (ImGui::DragFloat2("Rotation velocity", &rotation_velocity[0], 1, -180, 180))
+                    body->SetRotationVelocity(rotation_velocity * (M_PI / 180));
 
                 DrawObjectProperties(body.get());
                 ImGui::TreePop();
@@ -172,8 +181,15 @@ void Menu::Draw(DrawData *data) {
 
                 // Attach/detach
                 ImGui::Text("Is attached: %s", camera->IsAttached() ? "Yes" : "No");
-                if (camera->IsAttached() && ImGui::Button("Detach"))
-                    camera->Detach();
+                if (camera->IsAttached()) {
+                    if (ImGui::Button("Detach"))
+                        camera->Detach();
+                    else {
+                        float attach_distance = camera->GetAttachDistance();
+                        if (ImGui::DragFloat("Attach distance", &attach_distance, 0.1))
+                            camera->SetAttachDistance(attach_distance);
+                    }
+                }
 
                 // Delete
                 if (data->cameras.size() > 1) {

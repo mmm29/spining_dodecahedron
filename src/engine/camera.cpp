@@ -41,10 +41,12 @@ void Camera::SetFarZ(float far_z) {
     ResetCachedMatrices();
 }
 
-Matrix4 Camera::ComputeViewMatrix() const {
+void Camera::Update(float ts) {
     if (IsAttached())
-        position_ = -direction_ * 10;
+        position_ = -direction_ * attach_distance_;
+}
 
+Matrix4 Camera::ComputeViewMatrix() const {
     return CreateViewMatrix(GetWorldPosition(),
                             rotation_matrix_.GetRow<3>(0),
                             rotation_matrix_.GetRow<3>(1),
@@ -66,4 +68,12 @@ Matrix4 Camera::ComputeViewProjectionMatrix() const {
 
 void Camera::ResetCachedMatrices() {
     is_projection_matrix_cached_ = false;
+}
+
+void Camera::SetAttachDistance(float attach_distance) {
+    attach_distance_ = attach_distance;
+}
+
+float Camera::GetAttachDistance() const {
+    return attach_distance_;
 }

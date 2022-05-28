@@ -44,6 +44,10 @@ public:
     Settings *AccessSettings();
 
     void SetDefaultSettings();
+
+private:
+    void UpdateRotationVelocities(float ts);
+
 private:
     Matrix4 screen_space_matrix_;
 

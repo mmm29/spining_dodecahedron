@@ -83,3 +83,7 @@ void Frustum::Invert() {
     for (Plane &plane : planes_)
         plane.Flip();
 }
+
+const std::array<Plane, Frustum::kPlanesCount> &Frustum::GetPlanes() const {
+    return planes_;
+}

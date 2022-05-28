@@ -78,7 +78,7 @@ int main() {
     auto camera_controller = std::make_shared<CameraController>();
     engine.AttachController(camera_controller);
 
-    sf::Color background_color = sf::Color::White;
+    sf::Color background_color = sf::Color(0xD7, 0xD7, 0xD7);
 
     Menu::DrawData menu_data;
     menu_data.window_background_color = &background_color;
@@ -89,20 +89,21 @@ int main() {
     cameras = &menu_data.cameras; // TODO: remove it
 
     {
-        std::string cube_obj_text = ReadFile("obj/armadillo.obj");
-        assert(!cube_obj_text.empty());
+        std::string obj_mesh_text = ReadFile("obj/dodecahedron.obj");
+        assert(!obj_mesh_text.empty() && "Mesh .obj file not found.");
 
-        std::shared_ptr<Mesh> cube_mesh = ObjParser::Parse(cube_obj_text);
-        assert(cube_mesh);
+        std::shared_ptr<Mesh> mesh = ObjParser::Parse(obj_mesh_text);
+        assert(mesh && "Failed to parse mesh .obj file.");
 
-        cube_mesh->Transform(matrix::Scale(0.05f));
+        mesh->Transform(matrix::Scale(2.f));
 
-        auto cube = std::make_shared<RigidBody>();
-        cube->SetMesh(cube_mesh);
-        cube->SetWorldPosition(Vector3(10, 10, 10));
+        auto obj = std::make_shared<RigidBody>();
+        obj->SetMesh(mesh);
+        obj->SetColor(Color(0xFF, 0xD3, 0xC9, 0xFF));
+        obj->SetWorldPosition(Vector3(10, 10, 10));
 
-        engine.GetWorld()->AddObject(cube);
-        engine.GetActiveCamera()->AttachTo(cube);
+        engine.GetWorld()->AddObject(obj);
+        engine.GetActiveCamera()->AttachTo(obj);
     }
 
     sf::Clock delta_clock;
