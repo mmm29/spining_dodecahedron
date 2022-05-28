@@ -2,6 +2,10 @@
 
 ![](assets/spinning_dodecahedron.gif)
 
+### Controls
+F2 - menu  
+W, A, S, D - moving (when camera detached)
+
 ## Third-party
 
 * ImGui ([GitHub](https://github.com/ocornut/imgui), [MIT License](https://github.com/ocornut/imgui/blob/master/LICENSE.txt))
