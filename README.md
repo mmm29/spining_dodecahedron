@@ -1,5 +1,7 @@
 # Simple 3D software renderer engine in C++
 
+![](assets/spinning_dodecahedron.gif)
+
 ## Third-party
 
 * ImGui ([GitHub](https://github.com/ocornut/imgui), [MIT License](https://github.com/ocornut/imgui/blob/master/LICENSE.txt))
