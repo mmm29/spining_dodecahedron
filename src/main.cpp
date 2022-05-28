@@ -28,6 +28,7 @@ static sf::Vector2i GetMouseMovement(sf::RenderWindow &window) {
 
 std::unordered_map<std::string, CameraInfo> *cameras; // TODO: remove it
 
+// Used to read .obj file.
 std::string ReadFile(const char *filepath) {
     std::ifstream file(filepath, std::ios::in | std::ios::ate);
 
@@ -44,6 +45,64 @@ std::string ReadFile(const char *filepath) {
 
     return data;
 }
+
+static const char dodecahedron_obj[] =
+        "v  -0.57735  -0.57735  0.57735\n"
+        "v  0.934172  0.356822  0\n"
+        "v  0.934172  -0.356822  0\n"
+        "v  -0.934172  0.356822  0\n"
+        "v  -0.934172  -0.356822  0\n"
+        "v  0  0.934172  0.356822\n"
+        "v  0  0.934172  -0.356822\n"
+        "v  0.356822  0  -0.934172\n"
+        "v  -0.356822  0  -0.934172\n"
+        "v  0  -0.934172  -0.356822\n"
+        "v  0  -0.934172  0.356822\n"
+        "v  0.356822  0  0.934172\n"
+        "v  -0.356822  0  0.934172\n"
+        "v  0.57735  0.57735  -0.57735\n"
+        "v  0.57735  0.57735  0.57735\n"
+        "v  -0.57735  0.57735  -0.57735\n"
+        "v  -0.57735  0.57735  0.57735\n"
+        "v  0.57735  -0.57735  -0.57735\n"
+        "v  0.57735  -0.57735  0.57735\n"
+        "v  -0.57735  -0.57735  -0.57735\n"
+        "f  19  3  2\n"
+        "f  12  19  2\n"
+        "f  15  12  2\n"
+        "f  8  14  2\n"
+        "f  18  8  2\n"
+        "f  3  18  2\n"
+        "f  20  5  4\n"
+        "f  9  20  4\n"
+        "f  16  9  4\n"
+        "f  13  17  4\n"
+        "f  1  13  4\n"
+        "f  5  1  4\n"
+        "f  7  16  4\n"
+        "f  6  7  4\n"
+        "f  17  6  4\n"
+        "f  6  15  2\n"
+        "f  7  6  2\n"
+        "f  14  7  2\n"
+        "f  10  18  3\n"
+        "f  11  10  3\n"
+        "f  19  11  3\n"
+        "f  11  1  5\n"
+        "f  10  11  5\n"
+        "f  20  10  5\n"
+        "f  20  9  8\n"
+        "f  10  20  8\n"
+        "f  18  10  8\n"
+        "f  9  16  7\n"
+        "f  8  9  7\n"
+        "f  14  8  7\n"
+        "f  12  15  6\n"
+        "f  13  12  6\n"
+        "f  17  13  6\n"
+        "f  13  1  11\n"
+        "f  12  13  11\n"
+        "f  19  12  11";
 
 int main() {
     sf::ContextSettings settings;
@@ -89,10 +148,10 @@ int main() {
     cameras = &menu_data.cameras; // TODO: remove it
 
     {
-        std::string obj_mesh_text = ReadFile("obj/dodecahedron.obj");
-        assert(!obj_mesh_text.empty() && "Mesh .obj file not found.");
+//        std::string obj_mesh_text = ReadFile("obj/dodecahedron.obj");
+//        assert(!obj_mesh_text.empty() && "Mesh .obj file not found.");
 
-        std::shared_ptr<Mesh> mesh = ObjParser::Parse(obj_mesh_text);
+        std::shared_ptr<Mesh> mesh = ObjParser::Parse(dodecahedron_obj, sizeof(dodecahedron_obj) - 1);
         assert(mesh && "Failed to parse mesh .obj file.");
 
         mesh->Transform(matrix::Scale(2.f));
