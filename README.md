@@ -12,6 +12,7 @@ Left shift - fast move
 ## Third-party
 
 * ImGui ([GitHub](https://github.com/ocornut/imgui), [MIT License](https://github.com/ocornut/imgui/blob/master/LICENSE.txt))
+* ImGui SFML ([GitHub](https://github.com/eliasdaler/imgui-sfml), [MIT License](https://github.com/eliasdaler/imgui-sfml/blob/master/LICENSE))
 * SFML ([GitHub](https://github.com/SFML/SFML), [zlib License](https://github.com/SFML/SFML/blob/master/license.md))
 
 ## Useful links
