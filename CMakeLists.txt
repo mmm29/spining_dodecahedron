@@ -4,11 +4,7 @@ project(spinning_dodecahedron)
 set(CMAKE_CXX_STANDARD 17)
 
 # SFML
-set(SFML_ROOT "${CMAKE_SOURCE_DIR}/lib/SFML")
-set(SFML_INCLUDE_DIR "${SFML_ROOT}/include")
-set(SFML_LIBRARY_DIR "${SFML_ROOT}/lib")
-
-find_package(SFML COMPONENTS window REQUIRED)
+find_package(SFML COMPONENTS window system graphics REQUIRED)
 
 # OpenGL
 find_package(OpenGL REQUIRED)
