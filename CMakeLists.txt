@@ -14,6 +14,12 @@ include_directories(lib/imgui)
 
 file(GLOB IMGUI_SOURCES lib/imgui/*.cpp)
 
+# ImGui SFML
+set(BUILD_SHARED_LIBS TRUE)
+set(IMGUI_DIR "${CMAKE_SOURCE_DIR}/lib/imgui")
+
+add_subdirectory(lib/imgui-sfml)
+
 # Source files
 file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
 
@@ -21,4 +27,8 @@ file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
 add_executable(spinning_dodecahedron WIN32 ${SOURCE_FILES} ${IMGUI_SOURCES})
 
 # Libraries
-target_link_libraries(spinning_dodecahedron PUBLIC sfml-window sfml-graphics ${OPENGL_LIBRARIES})
+target_link_libraries(spinning_dodecahedron PUBLIC
+                        sfml-window
+                        sfml-graphics
+                        ImGui-SFML
+                        ${OPENGL_LIBRARIES})
