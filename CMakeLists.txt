@@ -15,10 +15,9 @@ include_directories(lib/imgui)
 file(GLOB IMGUI_SOURCES lib/imgui/*.cpp)
 
 # ImGui SFML
-set(BUILD_SHARED_LIBS TRUE)
-set(IMGUI_DIR "${CMAKE_SOURCE_DIR}/lib/imgui")
+add_library(ImGui-SFML lib/imgui-sfml/imgui-SFML.cpp)
 
-add_subdirectory(lib/imgui-sfml)
+target_include_directories(ImGui-SFML PUBLIC lib/imgui-sfml)
 
 # Source files
 file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
