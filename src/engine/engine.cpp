@@ -1,5 +1,6 @@
 #include <cassert>
 #include <unordered_map>
+#include <string>
 
 #include "engine.h"
 #include "math/graphics_utils.h"
