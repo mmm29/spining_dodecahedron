@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include <imgui.h>
 #include <imgui-SFML.h>
 
@@ -6,7 +8,7 @@
 #include "menu.h"
 
 void Menu::Initialize() {
-    ImGui::SFML::Init(window_);
+    assert(ImGui::SFML::Init(window_));
     ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
 }
 
